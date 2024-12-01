@@ -8,6 +8,7 @@ export class LibraryApp extends React.Component<any, any> {
     inputData = '';
     inputUpdateData = '';
     coverData = '';
+    coverUpdateData = '';
     counter = 0;
     f = 'all';
     updating = [];
@@ -108,7 +109,7 @@ export class LibraryApp extends React.Component<any, any> {
         const words = ['prohibited', 'forbidden', 'banned'];
         let temp = false;
         try {
-            new URL(this.coverData);
+            new URL(this.coverUpdateData);
             temp = true;
         }
         catch (e) {
@@ -151,7 +152,7 @@ export class LibraryApp extends React.Component<any, any> {
                     fetch(`http://localhost:3000/api/${this.collection[index].id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title: this.inputUpdateData, pictureUrl:this.coverData, completed: this.collection[index].completed }),
+                        body: JSON.stringify({ title: this.inputUpdateData, pictureUrl:this.coverUpdateData, completed: this.collection[index].completed }),
                     })
                         .then(response => response.json())
                         .then(data => {
