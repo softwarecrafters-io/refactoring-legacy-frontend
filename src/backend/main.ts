@@ -1,9 +1,7 @@
-import {Server} from "./infrastructure/server";
-import {LibraryController} from "./infrastructure/controller";
-import {InMemoryBookRepository} from "./core/bookRepository";
+import {LibraryController} from "./controller/LibraryController";
+import {Server} from "./server/server";
 
-const repo = new InMemoryBookRepository();
-const controller = new LibraryController(repo);
+const controller = new LibraryController();
 const server = new Server(controller);
 const PORT = 3000;
 
