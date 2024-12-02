@@ -8,7 +8,8 @@
     "test:e2e": "cypress run",
     "test:unit": "jest --testMatch='**/src/tests/unit/**/*.test.*'",
     "test:integration": "jest --testMatch='**/src/tests/integration/**/*.test.*'",
-    "test": "npm run test:e2e && npm run test:integration && npm run test:unit"
+    "test": "npm run test:e2e && npm run test:integration && npm run test:unit",
+    "compile:watch": "tsc -w --noEmit"
   },
   "dependencies": {
     "@ionic/react": "^8.4.1",

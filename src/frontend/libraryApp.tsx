@@ -217,8 +217,9 @@ export class LibraryApp extends React.Component<any, any> {
         return fBooks;
     }
 
-    edit(index, text){
+    edit(index, text, url){
         this.inputUpdateData = text;
+        this.coverUpdateData = url;
         this.updating[index] = true;
         this.forceUpdate();
     }
@@ -253,7 +254,7 @@ export class LibraryApp extends React.Component<any, any> {
                 </button>
                 <h2>Books Read: {this.counter}</h2>
                 <div>
-                    <button className="library-button all-filter" onClick={this.setFilter.bind(this, 'all')}>All</button>
+                <button className="library-button all-filter" onClick={this.setFilter.bind(this, 'all')}>All</button>
                     <button className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
                     <button className="library-button incomplete-filter" onClick={this.setFilter.bind(this, 'incomplete')}>Unread</button>
                 </div>
@@ -265,21 +266,21 @@ export class LibraryApp extends React.Component<any, any> {
                                 ? <div>
                                     <input
                                         className="book-edit-input"
-                                        defaultValue={b.pictureUrl} //
-                                        onChange={this.onCoverChange.bind(this)}
+                                        defaultValue={b.title} // Asumiendo que inputData se usa para la edición
+                                        onChange={this.handleUpdateInputChange.bind(this)}
                                     />
                                     <input
                                         className="book-edit-input"
-                                        defaultValue={b.title} // Asumiendo que inputData se usa para la edición
-                                        onChange={this.handleUpdateInputChange.bind(this)}
+                                        defaultValue={b.pictureUrl} //
+                                        onChange={this.onCoverChange.bind(this)}
                                     />
                                 </div>
                                 : <div className={"book-item"}>
                                     <img src={b.pictureUrl} alt={b.title} height={160} width={130} className="book-cover"/>
                                     <div>
 
-                                        <p className="title" >
-                                           {b.title} {b.completed && <IonIcon className={"complete-icon"} icon={checkmark}></IonIcon> }
+                                        <p className="title">
+                                        {b.title} {b.completed && <IonIcon className={"complete-icon"} icon={checkmark}></IonIcon> }
                                         </p>
                                         {!this.updating[index] &&
                                             <button className="book-button"
@@ -288,7 +289,7 @@ export class LibraryApp extends React.Component<any, any> {
                                             </button>}
                                         {!this.updating[index] &&
                                             <button className="book-button"
-                                                    onClick={() => this.edit(index, b.title)}><IonIcon icon={createOutline}/>
+                                                    onClick={() => this.edit(index, b.title, b.pictureUrl)}><IonIcon icon={createOutline}/>
                                             </button>
                                         }
                                         {!this.updating[index] &&
