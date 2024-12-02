@@ -1,4 +1,3 @@
-
 describe('Library App', () => {
   beforeEach(() => {
     cy.visit('http://localhost:5173');
@@ -9,13 +8,11 @@ describe('Library App', () => {
   });
 
   it('should be able to add new book', ()=>{
-    cy.get('[data-test-id="titleInput"]').type('New book');
-    cy.get('[data-test-id="coverInput"]').type('https://bucket.mlcdn.com/a/1590/1590228/images/75a5707709691e7651c5ebcace5287da35c56015.png');
+    const aBook = 'New book';
+    addBook(aBook);
 
-    cy.get('[data-test-id="addButton"]').click();
-
-    cy.contains('[data-test-id="bookList"]', 'New book').should('exist')
-    cy.get('[data-test-id="deleteButton"]').click();
+    cy.contains('[data-test-id="bookList"]', aBook).should('exist')
+    deleteBook();
   });
 
   it('should be able to delete a book', ()=>{
@@ -71,3 +68,13 @@ describe('Library App', () => {
 
 });
 
+function addBook(aBook: string) {
+  cy.get('[data-test-id="titleInput"]').type(aBook);
+  cy.get('[data-test-id="coverInput"]').type('https://bucket.mlcdn.com/a/1590/1590228/images/75a5707709691e7651c5ebcace5287da35c56015.png');
+
+  cy.get('[data-test-id="addButton"]').click();
+}
+
+function deleteBook() {
+  cy.get('[data-test-id="deleteButton"]').click();
+}
