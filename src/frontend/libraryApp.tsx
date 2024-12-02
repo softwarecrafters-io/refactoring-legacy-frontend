@@ -271,11 +271,13 @@ export class LibraryApp extends React.Component<any, any> {
                             this.updating[index]
                                 ? <div>
                                     <input
+                                        data-test-id={"editTitleInput"}
                                         className="book-edit-input"
                                         defaultValue={b.title} // Asumiendo que inputData se usa para la edición
                                         onChange={this.handleUpdateInputChange.bind(this)}
                                     />
                                     <input
+                                        data-test-id={"editCoverInput"}
                                         className="book-edit-input"
                                         defaultValue={b.pictureUrl} //
                                         onChange={this.onCoverChange.bind(this)}
@@ -299,6 +301,7 @@ export class LibraryApp extends React.Component<any, any> {
                                             </button>}
                                         {!this.updating[index] &&
                                             <button className="book-button"
+                                                    data-test-id="editButton"
                                                     onClick={() => this.edit(index, b.title, b.pictureUrl)}><IonIcon icon={createOutline}/>
                                             </button>
                                         }
@@ -315,6 +318,7 @@ export class LibraryApp extends React.Component<any, any> {
                         {this.updating[index] &&
                             <div>
                                 <button className="library-button book-update-button"
+                                        data-test-id="updateButton"
                                         onClick={this.update.bind(this, index)}>
                                     Save
                                 </button>
