@@ -285,10 +285,14 @@ export class LibraryApp extends React.Component<any, any> {
                                     <div>
 
                                         <p className="title" >
-                                           {b.title} {b.completed && <IonIcon className={"complete-icon"} icon={checkmark}></IonIcon> }
+                                           {b.title} {b.completed &&
+                                            <IonIcon
+                                                data-test-id="markAsReadIcon"
+                                                className={"complete-icon"} icon={checkmark}></IonIcon> }
                                         </p>
                                         {!this.updating[index] &&
                                             <button className="book-button"
+                                                    data-test-id="markAsReadButton"
                                                     onClick={this.toggleComplete.bind(this, index)}>
                                                 {b.completed ? 'Mark as Unread' : 'Mark as Read'}
                                             </button>}
