@@ -257,8 +257,9 @@ export class LibraryApp extends React.Component<any, any> {
                     <button className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
                     <button className="library-button incomplete-filter" onClick={this.setFilter.bind(this, 'incomplete')}>Unread</button>
                 </div>
+                <ul className="book-list">
                 {books.map((b, index) => (
-                    <div className="book-list">
+                    <li className="book">
                         {
                             this.updating[index]
                                 ? <div>
@@ -312,8 +313,9 @@ export class LibraryApp extends React.Component<any, any> {
                             </div>
 
                         }
-                    </div>
+                    </li>
                 ))}
+                </ul>
             </div>
         );
     }
