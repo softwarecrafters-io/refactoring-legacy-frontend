@@ -258,14 +258,14 @@ export class LibraryApp extends React.Component<any, any> {
                 </button>
                 <h2>Books Read: {this.counter}</h2>
                 <div>
-                    <button className="library-button all-filter" onClick={this.setFilter.bind(this, 'all')}>All</button>
-                    <button className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
-                    <button className="library-button incomplete-filter" onClick={this.setFilter.bind(this, 'incomplete')}>Unread</button>
+                    <button data-test-id={"allFilterButton"} className="library-button all-filter" onClick={this.setFilter.bind(this, 'all')}>All</button>
+                    <button data-test-id={"readFilterButton"} className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
+                    <button data-test-id={"unreadFilterButton"} className="library-button incomplete-filter" onClick={this.setFilter.bind(this, 'incomplete')}>Unread</button>
                 </div>
                 <ul className="book-list"
                     data-test-id={"bookList"}>
                 {books.map((b, index) => (
-                    <li className="book">
+                    <li className="book" data-test-id={"bookElement"}>
                         {
                             this.updating[index]
                                 ? <div>

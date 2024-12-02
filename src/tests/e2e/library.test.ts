@@ -39,5 +39,22 @@ describe('Library App', () => {
     cy.get('[data-test-id="deleteButton"]').click();
   });
 
+  it('should be able to filter as read', ()=>{
+    cy.get('[data-test-id="titleInput"]').type('New book');
+    cy.get('[data-test-id="coverInput"]').type('https://bucket.mlcdn.com/a/1590/1590228/images/75a5707709691e7651c5ebcace5287da35c56015.png');
+    cy.get('[data-test-id="addButton"]').click();
+    cy.get('[data-test-id="markAsReadButton"]').click();
+    cy.get('[data-test-id="titleInput"]').type('Other book');
+    cy.get('[data-test-id="coverInput"]').type('https://bucket.mlcdn.com/a/1590/1590228/images/75a5707709691e7651c5ebcace5287da35c56015.png');
+    cy.get('[data-test-id="addButton"]').click();
+
+    cy.get('[data-test-id="readFilterButton"]').click();
+
+    cy.get('[data-test-id="bookElement"]').should('to.have.length', 1);
+    cy.get('[data-test-id="deleteButton"]').click();
+    cy.get('[data-test-id="allFilterButton"]').click();
+    cy.get('[data-test-id="deleteButton"]').click();
+  });
+
 });
 
