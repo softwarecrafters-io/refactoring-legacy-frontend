@@ -233,22 +233,27 @@ export class LibraryApp extends React.Component<any, any> {
 
         return (
             <div className="app-container">
-                <h1>LIBRARY APP</h1>
+                <h1 data-test-id={"titleHeader"}>LIBRARY APP</h1>
                 <div>
                     <input
+                        data-test-id={"titleInput"}
                         className="library-input"
                         value={this.inputData}
                         placeholder={'Book Title'}
                         onChange={this.handleInputChange.bind(this)}
                     />
                     <input
+                        data-test-id={"coverInput"}
                         className="library-input"
                         value={this.coverData}
                         placeholder={'Cover Url'}
                         onChange={this.onCoverChange.bind(this)}
                     />
                 </div>
-                <button className="library-button add-book-button" onClick={this.add.bind(this)}>
+                <button
+                    data-test-id={"addButton"}
+                    className="library-button add-book-button"
+                    onClick={this.add.bind(this)}>
                     Add Book
                 </button>
                 <h2>Books Read: {this.counter}</h2>
@@ -257,7 +262,8 @@ export class LibraryApp extends React.Component<any, any> {
                     <button className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
                     <button className="library-button incomplete-filter" onClick={this.setFilter.bind(this, 'incomplete')}>Unread</button>
                 </div>
-                <ul className="book-list">
+                <ul className="book-list"
+                    data-test-id={"bookList"}>
                 {books.map((b, index) => (
                     <li className="book">
                         {
@@ -293,6 +299,7 @@ export class LibraryApp extends React.Component<any, any> {
                                         }
                                         {!this.updating[index] &&
                                             <button className="book-button book-delete-button"
+                                                    data-test-id="deleteButton"
                                                     onClick={this.delete.bind(this, index)}>
                                                 <IonIcon icon={trash}/>
                                             </button>}
