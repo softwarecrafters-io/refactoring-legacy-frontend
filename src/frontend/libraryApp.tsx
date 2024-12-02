@@ -217,8 +217,9 @@ export class LibraryApp extends React.Component<any, any> {
         return fBooks;
     }
 
-    edit(index, text){
+    edit(index, text, url){
         this.inputUpdateData = text;
+        this.coverUpdateData = url
         this.updating[index] = true;
         this.forceUpdate();
     }
@@ -271,21 +272,21 @@ export class LibraryApp extends React.Component<any, any> {
                                 ? <div>
                                     <input
                                         className="book-edit-input"
-                                        defaultValue={b.pictureUrl} //
-                                        onChange={this.onCoverChange.bind(this)}
+                                        defaultValue={b.title} // Asumiendo que inputData se usa para la edición
+                                        onChange={this.handleUpdateInputChange.bind(this)}
                                     />
                                     <input
                                         className="book-edit-input"
-                                        defaultValue={b.title} // Asumiendo que inputData se usa para la edición
-                                        onChange={this.handleUpdateInputChange.bind(this)}
+                                        defaultValue={b.pictureUrl} //
+                                        onChange={this.onCoverChange.bind(this)}
                                     />
                                 </div>
                                 : <div className={"book-item"}>
                                     <img src={b.pictureUrl} alt={b.title} height={160} width={130} className="book-cover"/>
                                     <div>
 
-                                        <p className="title" >
-                                           {b.title} {b.completed &&
+                                        <p className="title">
+                                        {b.title} {b.completed &&
                                             <IonIcon
                                                 data-test-id="markAsReadIcon"
                                                 className={"complete-icon"} icon={checkmark}></IonIcon> }
@@ -298,7 +299,7 @@ export class LibraryApp extends React.Component<any, any> {
                                             </button>}
                                         {!this.updating[index] &&
                                             <button className="book-button"
-                                                    onClick={() => this.edit(index, b.title)}><IonIcon icon={createOutline}/>
+                                                    onClick={() => this.edit(index, b.title, b.pictureUrl)}><IonIcon icon={createOutline}/>
                                             </button>
                                         }
                                         {!this.updating[index] &&
