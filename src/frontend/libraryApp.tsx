@@ -168,12 +168,6 @@ export class LibraryApp extends React.Component {
         }
     }
 
-    handleUpdateInputChange(event) {
-        const value = event.target.value;
-        this.updatedBookTitle = value;
-        this.forceUpdate();
-    }
-
     delete(index) {
         fetch(`http://localhost:3000/api/${this.bookList[index].id}`, { method: 'DELETE' })
             .then(() => {
@@ -242,6 +236,16 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     };
 
+    onUpdatedTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.updatedBookTitle = event.target.value;
+        this.forceUpdate();
+    };
+
+    onUpdatedPictureUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.updatedBooKPictureUrl = event.target.value;
+        this.forceUpdate();
+    };
+
     render() {
         const books = this.getBooks();
 
@@ -287,13 +291,13 @@ export class LibraryApp extends React.Component {
                                         data-test-id={"editTitleInput"}
                                         className="book-edit-input"
                                         defaultValue={b.title} // Asumiendo que inputData se usa para la edición
-                                        onChange={this.handleUpdateInputChange.bind(this)}
+                                        onChange={this.onUpdatedTitleChange}
                                     />
                                     <input
                                         data-test-id={"editCoverInput"}
                                         className="book-edit-input"
                                         defaultValue={b.pictureUrl} //
-                                        onChange={this.onPictureUrlChange.bind(this)}
+                                        onChange={this.onUpdatedPictureUrlChange}
                                     />
                                 </div>
                                 : <div className={"book-item"}>
