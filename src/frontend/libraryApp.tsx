@@ -105,13 +105,13 @@ export class LibraryApp extends React.Component {
         }
     }
 
-    update = index => {
+    update = ((index:number, book:Book, title:string, pictureUrl:string) => {
         const min = 3; // Longitud mínima del texto
         const max = 100; // Longitud máxima del texto
         const words = ['prohibited', 'forbidden', 'banned'];
         let temp = false;
         try {
-            new URL(this.updatedBooKPictureUrl);
+            new URL(pictureUrl);
             temp = true;
         }
         catch (e) {
@@ -121,15 +121,15 @@ export class LibraryApp extends React.Component {
             alert('Error: The cover url is not valid');
         }
         // Validación de longitud mínima y máxima
-        else if (this.updatedBookTitle.length < min || this.updatedBookTitle.length > max) {
+        else if (title.length < min || title.length > max) {
             alert(`Error: The title must be between ${min} and ${max} characters long.`);
-        } else if (/[^a-zA-Z0-9\s]/.test(this.updatedBookTitle)) {
+        } else if (/[^a-zA-Z0-9\s]/.test(title)) {
             // Validación de caracteres especiales
             alert('Error: The title can only contain letters, numbers, and spaces.');
         } else {
             // Validación de palabras prohibidas
             let temp1 = false;
-            for (let word of this.updatedBookTitle.split(/\s+/)) {
+            for (let word of title.split(/\s+/)) {
                 if (words.includes(word)) {
                     alert(`Error: The title cannot include the prohibited word "${word}"`);
                     temp1 = true;
@@ -141,7 +141,7 @@ export class LibraryApp extends React.Component {
                 // Validación de texto repetido (excluyendo el índice actual)
                 let temp2 = false;
                 for (let i = 0; i < this.bookList.length; i++) {
-                    if (i !== index && this.bookList[i].title === this.updatedBookTitle) {
+                    if (i !== index && this.bookList[i].title === title) {
                         temp2 = true;
                         break;
                     }
@@ -154,7 +154,7 @@ export class LibraryApp extends React.Component {
                     fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title: this.updatedBookTitle, pictureUrl:this.updatedBooKPictureUrl, completed: this.bookList[index].completed }),
+                        body: JSON.stringify({ title: title, pictureUrl:pictureUrl, completed: this.bookList[index].completed }),
                     })
                         .then(response => response.json())
                         .then(data => {
@@ -165,7 +165,7 @@ export class LibraryApp extends React.Component {
                 }
             }
         }
-    };
+    });
 
     delete = (index:number) => {
         fetch(`http://localhost:3000/api/${this.bookList[index].id}`, { method: 'DELETE' })

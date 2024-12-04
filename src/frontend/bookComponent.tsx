@@ -3,6 +3,12 @@ import {IonIcon} from "@ionic/react";
 import {checkmark, createOutline, trash} from "ionicons/icons";
 import {Book} from "./libraryApp";
 
+type BookComponentState = {
+    isEditing: boolean,
+    title: string,
+    pictureUrl: string
+}
+
 export function BookComponent(props: {
     book: Book,
     index: number,
@@ -12,24 +18,51 @@ export function BookComponent(props: {
     toggleComplete: (index: number) => void,
     edit: (index: number, text: string, url: string) => void,
     deleteBook: (index: number) => void,
-    update: (index: number) => void,
+    update: (index: number, book:Book, title:string, pictureUrl:string) => void,
     close: (index: number) => void
 }) {
+    const [state, setState] = React.useState<BookComponentState>({
+        isEditing: false,
+        title: props.book.title,
+        pictureUrl: props.book.pictureUrl
+    });
+
+    const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setState(state => ({...state, title: event.target.value}));
+    }
+
+    const onPictureUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setState(state => ({...state, pictureUrl: event.target.value}));
+    }
+
+    const onEdit = () => {
+        setState(state => ({...state, isEditing: true}));
+    }
+
+    const onClose = () => {
+        setState(state => ({...state, isEditing: false}));
+    }
+
+    const onUpdate = () => {
+        setState(state => ({...state, isEditing: false}));
+        props.update(props.index, props.book, state.title, state.pictureUrl);
+    }
+
     return <li className="book" data-test-id={"bookElement"}>
         {
-            props.isEditing
+            state.isEditing
                 ? <div>
                     <input
                         data-test-id={"editTitleInput"}
                         className="book-edit-input"
-                        defaultValue={props.book.title} // Asumiendo que inputData se usa para la edición
-                        onChange={props.onUpdatedTitleChange}
+                        defaultValue={state.title} // Asumiendo que inputData se usa para la edición
+                        onChange={onTitleChange}
                     />
                     <input
                         data-test-id={"editCoverInput"}
                         className="book-edit-input"
-                        defaultValue={props.book.pictureUrl} //
-                        onChange={props.onUpdatedPictureUrlChange}
+                        defaultValue={state.pictureUrl} //
+                        onChange={onPictureUrlChange}
                     />
                 </div>
                 : <div className={"book-item"}>
@@ -43,21 +76,21 @@ export function BookComponent(props: {
                                 data-test-id="markAsReadIcon"
                                 className={"complete-icon"} icon={checkmark}></IonIcon>}
                         </p>
-                        {!props.isEditing &&
+                        {!state.isEditing &&
                             <button className="book-button"
                                     data-test-id="markAsReadButton"
                                     onClick={() => props.toggleComplete(props.index)}>
                                 {props.book.completed ? 'Mark as Unread' : 'Mark as Read'}
                             </button>}
-                        {!props.isEditing &&
+                        {!state.isEditing &&
                             <button className="book-button"
                                     data-test-id="editButton"
-                                    onClick={() => props.edit(props.index, props.book.title, props.book.pictureUrl)}>
+                                    onClick={onEdit}>
                                 <IonIcon
                                     icon={createOutline}/>
                             </button>
                         }
-                        {!props.isEditing &&
+                        {!state.isEditing &&
                             <button className="book-button book-delete-button"
                                     data-test-id="deleteButton"
                                     onClick={() => props.deleteBook(props.index)}>
@@ -67,15 +100,15 @@ export function BookComponent(props: {
                 </div>
         }
 
-        {props.isEditing &&
+        {state.isEditing &&
             <div>
                 <button className="library-button book-update-button"
                         data-test-id="updateButton"
-                        onClick={() => props.update(props.index)}>
+                        onClick={onUpdate}>
                     Save
                 </button>
                 <button className="library-button book-update-button"
-                        onClick={() => props.close(props.index)}>
+                        onClick={onClose}>
                     Cancel
                 </button>
             </div>
