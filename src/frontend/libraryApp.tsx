@@ -171,6 +171,13 @@ export class LibraryApp extends React.Component<any, any> {
         this.forceUpdate();
     }
 
+    handlePicture(event) {
+        var value = event.target.value;
+        this.coverUpdateData = value;
+        this.forceUpdate();
+    }
+
+
     delete(index) {
         fetch(`http://localhost:3000/api/${this.collection[index].id}`, { method: 'DELETE' })
             .then(() => {
@@ -272,7 +279,7 @@ export class LibraryApp extends React.Component<any, any> {
                                     <input
                                         className="book-edit-input"
                                         defaultValue={b.pictureUrl} //
-                                        onChange={this.onCoverChange.bind(this)}
+                                        onChange={this.handlePicture.bind(this)}
                                     />
                                 </div>
                                 : <div className={"book-item"}>
