@@ -42,16 +42,6 @@ export class LibraryApp extends React.Component {
             .catch(error => console.log(error));
     }
 
-    onTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        this.newBookTitle = event.target.value;
-        this.forceUpdate();
-    }
-
-    onPictureUrlChange(event: React.ChangeEvent<HTMLInputElement>) {
-        this.newBookPictureUrl = event.target.value;
-        this.forceUpdate();
-    }
-
     add() {
         const min = 3; // Longitud mínima del texto
         const max = 100; // Longitud máxima del texto
@@ -242,6 +232,16 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     }
 
+    onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.newBookTitle = event.target.value;
+        this.forceUpdate();
+    };
+
+    onPictureUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.newBookPictureUrl = event.target.value;
+        this.forceUpdate();
+    };
+
     render() {
         const books = this.getBooks();
 
@@ -254,14 +254,14 @@ export class LibraryApp extends React.Component {
                         className="library-input"
                         value={this.newBookTitle}
                         placeholder={'Book Title'}
-                        onChange={this.onTitleChange.bind(this)}
+                        onChange={this.onTitleChange}
                     />
                     <input
                         data-test-id={"coverInput"}
                         className="library-input"
                         value={this.newBookPictureUrl}
                         placeholder={'Cover Url'}
-                        onChange={this.onPictureUrlChange.bind(this)}
+                        onChange={this.onPictureUrlChange}
                     />
                 </div>
                 <button
