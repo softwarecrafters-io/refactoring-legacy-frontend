@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "noImplicitAny": false,
     "strictNullChecks": false,
+    "noEmit": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "types": ["jest","cypress", "node", "testing-library__jest-dom"]
