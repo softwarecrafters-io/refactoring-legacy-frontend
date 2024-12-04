@@ -1,41 +1,54 @@
 import * as React from "react";
-import { IonIcon } from '@ionic/react';
-import {trash, createOutline, checkmark} from 'ionicons/icons';
+import {IonIcon} from '@ionic/react';
+import {checkmark, createOutline, trash} from 'ionicons/icons';
 import {v4 as uuid} from 'uuid';
 
-export class LibraryApp extends React.Component<any, any> {
-    collection = [];
-    inputData = '';
-    inputUpdateData = '';
-    coverData = '';
-    coverUpdateData = '';
-    counter = 0;
-    f = 'all';
-    updating = [];
+class Book{
+    constructor(
+        readonly id: string,
+        readonly title: string,
+        readonly pictureUrl: string,
+        public completed = false)
+    {}
+}
+
+type FilterKind = 'all' | 'completed' | 'incomplete';
+
+export class LibraryApp extends React.Component {
+    bookList: Book[] = [];
+    newBookTitle = '';
+    updatedBookTitle = '';
+    newBookPictureUrl = '';
+    updatedBooKPictureUrl = '';
+    numberOfBooks = 0;
+    currentFilter: FilterKind = 'all';
+    isEditing:boolean[] = [];
 
     constructor(props) {
         super(props);
+        this.initialize();
+    }
+
+    private initialize() {
         fetch('http://localhost:3000/api/')
             .then(response => response.json())
             .then(data => {
-                this.collection = data;
-                for (let i = 0; i < this.collection.length; i++) {
-                    this.updating.push(false);
+                this.bookList = data;
+                for (let i = 0; i < this.bookList.length; i++) {
+                    this.isEditing.push(false);
                 }
                 this.forceUpdate();
             })
             .catch(error => console.log(error));
     }
 
-    handleInputChange(event) {
-        var value = event.target.value;
-        this.inputData = value;
+    onTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.newBookTitle = event.target.value;
         this.forceUpdate();
     }
 
-    onCoverChange(event) {
-        var value = event.target.value;
-        this.coverData = value;
+    onPictureUrlChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.newBookPictureUrl = event.target.value;
         this.forceUpdate();
     }
 
@@ -45,7 +58,7 @@ export class LibraryApp extends React.Component<any, any> {
         const forbidden = ['prohibited', 'forbidden', 'banned'];
         let temp = false;
         try {
-            new URL(this.coverData);
+            new URL(this.newBookPictureUrl);
             temp = true;
         }
         catch (e) {
@@ -55,14 +68,14 @@ export class LibraryApp extends React.Component<any, any> {
             alert('Error: The cover url is not valid');
         }
         // Validación de longitud mínima y máxima
-        else if (this.inputData.length < min || this.inputData.length > max) {
+        else if (this.newBookTitle.length < min || this.newBookTitle.length > max) {
             alert(`Error: The title must be between ${min} and ${max} characters long.`);
-        } else if (/[^a-zA-Z0-9\s]/.test(this.inputData)) {
+        } else if (/[^a-zA-Z0-9\s]/.test(this.newBookTitle)) {
             // Validación de caracteres especiales
             alert('Error: The title can only contain letters, numbers, and spaces.');
         } else {
             // Validación de palabras prohibidas
-            const words = this.inputData.split(/\s+/);
+            const words = this.newBookTitle.split(/\s+/);
             let foundForbiddenWord = false;
             for (let word of words) {
                 if (forbidden.includes(word)) {
@@ -75,8 +88,8 @@ export class LibraryApp extends React.Component<any, any> {
             if (!foundForbiddenWord) {
                 // Validación de texto repetido
                 let isRepeated = false;
-                for (let i = 0; i < this.collection.length; i++) {
-                    if (this.collection[i].title === this.inputData) {
+                for (let i = 0; i < this.bookList.length; i++) {
+                    if (this.bookList[i].title === this.newBookTitle) {
                         isRepeated = true;
                         break;
                     }
@@ -89,13 +102,13 @@ export class LibraryApp extends React.Component<any, any> {
                     fetch('http://localhost:3000/api/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({id:uuid(), title: this.inputData, pictureUrl: this.coverData, completed: false }),
+                        body: JSON.stringify({id:uuid(), title: this.newBookTitle, pictureUrl: this.newBookPictureUrl, completed: false }),
                     })
                         .then(response => response.json())
                         .then(data => {
-                            this.collection.push(data);
-                            this.inputData = '';
-                            this.coverData = '';
+                            this.bookList.push(data);
+                            this.newBookTitle = '';
+                            this.newBookPictureUrl = '';
                             this.forceUpdate();
                         });
                 }
@@ -109,7 +122,7 @@ export class LibraryApp extends React.Component<any, any> {
         const words = ['prohibited', 'forbidden', 'banned'];
         let temp = false;
         try {
-            new URL(this.coverUpdateData);
+            new URL(this.updatedBooKPictureUrl);
             temp = true;
         }
         catch (e) {
@@ -119,15 +132,15 @@ export class LibraryApp extends React.Component<any, any> {
             alert('Error: The cover url is not valid');
         }
         // Validación de longitud mínima y máxima
-        else if (this.inputUpdateData.length < min || this.inputUpdateData.length > max) {
+        else if (this.updatedBookTitle.length < min || this.updatedBookTitle.length > max) {
             alert(`Error: The title must be between ${min} and ${max} characters long.`);
-        } else if (/[^a-zA-Z0-9\s]/.test(this.inputUpdateData)) {
+        } else if (/[^a-zA-Z0-9\s]/.test(this.updatedBookTitle)) {
             // Validación de caracteres especiales
             alert('Error: The title can only contain letters, numbers, and spaces.');
         } else {
             // Validación de palabras prohibidas
             let temp1 = false;
-            for (let word of this.inputUpdateData.split(/\s+/)) {
+            for (let word of this.updatedBookTitle.split(/\s+/)) {
                 if (words.includes(word)) {
                     alert(`Error: The title cannot include the prohibited word "${word}"`);
                     temp1 = true;
@@ -138,8 +151,8 @@ export class LibraryApp extends React.Component<any, any> {
             if (!temp1) {
                 // Validación de texto repetido (excluyendo el índice actual)
                 let temp2 = false;
-                for (let i = 0; i < this.collection.length; i++) {
-                    if (i !== index && this.collection[i].title === this.inputUpdateData) {
+                for (let i = 0; i < this.bookList.length; i++) {
+                    if (i !== index && this.bookList[i].title === this.updatedBookTitle) {
                         temp2 = true;
                         break;
                     }
@@ -149,14 +162,14 @@ export class LibraryApp extends React.Component<any, any> {
                     alert('Error: The title is already in the collection.');
                 } else {
                     // Si pasa todas las validaciones, actualizar el libro
-                    fetch(`http://localhost:3000/api/${this.collection[index].id}`, {
+                    fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title: this.inputUpdateData, pictureUrl:this.coverUpdateData, completed: this.collection[index].completed }),
+                        body: JSON.stringify({ title: this.updatedBookTitle, pictureUrl:this.updatedBooKPictureUrl, completed: this.bookList[index].completed }),
                     })
                         .then(response => response.json())
                         .then(data => {
-                            this.collection[index] = data;
+                            this.bookList[index] = data;
                             this.close(index);
                             this.forceUpdate();
                         });
@@ -166,66 +179,66 @@ export class LibraryApp extends React.Component<any, any> {
     }
 
     handleUpdateInputChange(event) {
-        var value = event.target.value;
-        this.inputUpdateData = value;
+        const value = event.target.value;
+        this.updatedBookTitle = value;
         this.forceUpdate();
     }
 
     delete(index) {
-        fetch(`http://localhost:3000/api/${this.collection[index].id}`, { method: 'DELETE' })
+        fetch(`http://localhost:3000/api/${this.bookList[index].id}`, { method: 'DELETE' })
             .then(() => {
-                if (this.collection[index].completed) {
-                    this.counter--;
+                if (this.bookList[index].completed) {
+                    this.numberOfBooks--;
                 }
-                this.collection.splice(index, 1);
+                this.bookList.splice(index, 1);
                 this.forceUpdate();
             })
     }
 
     toggleComplete(index) {
-        this.collection[index].completed = !this.collection[index].completed;
-        fetch(`http://localhost:3000/api/${this.collection[index].id}`, {
+        this.bookList[index].completed = !this.bookList[index].completed;
+        fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completed: this.collection[index].completed }),
+            body: JSON.stringify({ completed: this.bookList[index].completed }),
         })
             .then(response => response.json())
             .then(data => {
                 // this.collection[index] = data;
-                this.collection[index].completed ? this.counter++ : this.counter--;
+                this.bookList[index].completed ? this.numberOfBooks++ : this.numberOfBooks--;
                 this.forceUpdate();
             })
     }
 
 
     setFilter(filter) {
-        this.f = filter;
+        this.currentFilter = filter;
         this.forceUpdate();
     }
 
     getBooks() {
-        var fBooks = [];
-        for (var i = 0; i < this.collection.length; i++) {
+        const fBooks = [];
+        for (let i = 0; i < this.bookList.length; i++) {
             if (
-                this.f === 'all' ||
-                (this.f === 'completed' && this.collection[i].completed) ||
-                (this.f === 'incomplete' && !this.collection[i].completed)
+                this.currentFilter === 'all' ||
+                (this.currentFilter === 'completed' && this.bookList[i].completed) ||
+                (this.currentFilter === 'incomplete' && !this.bookList[i].completed)
             ) {
-                fBooks.push(this.collection[i]);
+                fBooks.push(this.bookList[i]);
             }
         }
         return fBooks;
     }
 
     edit(index, text, url){
-        this.inputUpdateData = text;
-        this.coverUpdateData = url
-        this.updating[index] = true;
+        this.updatedBookTitle = text;
+        this.updatedBooKPictureUrl = url
+        this.isEditing[index] = true;
         this.forceUpdate();
     }
 
     close(index){
-        this.updating[index] = false;
+        this.isEditing[index] = false;
         this.forceUpdate();
     }
 
@@ -239,16 +252,16 @@ export class LibraryApp extends React.Component<any, any> {
                     <input
                         data-test-id={"titleInput"}
                         className="library-input"
-                        value={this.inputData}
+                        value={this.newBookTitle}
                         placeholder={'Book Title'}
-                        onChange={this.handleInputChange.bind(this)}
+                        onChange={this.onTitleChange.bind(this)}
                     />
                     <input
                         data-test-id={"coverInput"}
                         className="library-input"
-                        value={this.coverData}
+                        value={this.newBookPictureUrl}
                         placeholder={'Cover Url'}
-                        onChange={this.onCoverChange.bind(this)}
+                        onChange={this.onPictureUrlChange.bind(this)}
                     />
                 </div>
                 <button
@@ -257,7 +270,7 @@ export class LibraryApp extends React.Component<any, any> {
                     onClick={this.add.bind(this)}>
                     Add Book
                 </button>
-                <h2>Books Read: {this.counter}</h2>
+                <h2>Books Read: {this.numberOfBooks}</h2>
                 <div>
                     <button data-test-id={"allFilterButton"} className="library-button all-filter" onClick={this.setFilter.bind(this, 'all')}>All</button>
                     <button data-test-id={"readFilterButton"} className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
@@ -268,7 +281,7 @@ export class LibraryApp extends React.Component<any, any> {
                 {books.map((b, index) => (
                     <li className="book" data-test-id={"bookElement"}>
                         {
-                            this.updating[index]
+                            this.isEditing[index]
                                 ? <div>
                                     <input
                                         data-test-id={"editTitleInput"}
@@ -280,7 +293,7 @@ export class LibraryApp extends React.Component<any, any> {
                                         data-test-id={"editCoverInput"}
                                         className="book-edit-input"
                                         defaultValue={b.pictureUrl} //
-                                        onChange={this.onCoverChange.bind(this)}
+                                        onChange={this.onPictureUrlChange.bind(this)}
                                     />
                                 </div>
                                 : <div className={"book-item"}>
@@ -293,19 +306,19 @@ export class LibraryApp extends React.Component<any, any> {
                                                 data-test-id="markAsReadIcon"
                                                 className={"complete-icon"} icon={checkmark}></IonIcon> }
                                         </p>
-                                        {!this.updating[index] &&
+                                        {!this.isEditing[index] &&
                                             <button className="book-button"
                                                     data-test-id="markAsReadButton"
                                                     onClick={this.toggleComplete.bind(this, index)}>
                                                 {b.completed ? 'Mark as Unread' : 'Mark as Read'}
                                             </button>}
-                                        {!this.updating[index] &&
+                                        {!this.isEditing[index] &&
                                             <button className="book-button"
                                                     data-test-id="editButton"
                                                     onClick={() => this.edit(index, b.title, b.pictureUrl)}><IonIcon icon={createOutline}/>
                                             </button>
                                         }
-                                        {!this.updating[index] &&
+                                        {!this.isEditing[index] &&
                                             <button className="book-button book-delete-button"
                                                     data-test-id="deleteButton"
                                                     onClick={this.delete.bind(this, index)}>
@@ -315,7 +328,7 @@ export class LibraryApp extends React.Component<any, any> {
                                 </div>
                         }
 
-                        {this.updating[index] &&
+                        {this.isEditing[index] &&
                             <div>
                                 <button className="library-button book-update-button"
                                         data-test-id="updateButton"
