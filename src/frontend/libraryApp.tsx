@@ -106,7 +106,7 @@ export class LibraryApp extends React.Component {
         }
     }
 
-    update(index) {
+    update = index => {
         const min = 3; // Longitud mínima del texto
         const max = 100; // Longitud máxima del texto
         const words = ['prohibited', 'forbidden', 'banned'];
@@ -166,9 +166,9 @@ export class LibraryApp extends React.Component {
                 }
             }
         }
-    }
+    };
 
-    delete(index) {
+    delete = (index:number) => {
         fetch(`http://localhost:3000/api/${this.bookList[index].id}`, { method: 'DELETE' })
             .then(() => {
                 if (this.bookList[index].completed) {
@@ -177,9 +177,9 @@ export class LibraryApp extends React.Component {
                 this.bookList.splice(index, 1);
                 this.forceUpdate();
             })
-    }
+    };
 
-    toggleComplete(index) {
+    toggleComplete = (index:number) => {
         this.bookList[index].completed = !this.bookList[index].completed;
         fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
             method: 'PUT',
@@ -192,7 +192,7 @@ export class LibraryApp extends React.Component {
                 this.bookList[index].completed ? this.numberOfBooks++ : this.numberOfBooks--;
                 this.forceUpdate();
             })
-    }
+    };
 
 
     setFilter(filter) {
@@ -214,17 +214,17 @@ export class LibraryApp extends React.Component {
         return fBooks;
     }
 
-    edit(index, text, url){
+    edit = (index:number, text:string, url:string) => {
         this.updatedBookTitle = text;
         this.updatedBooKPictureUrl = url
         this.isEditing[index] = true;
         this.forceUpdate();
-    }
+    };
 
-    close(index){
+    close = index => {
         this.isEditing[index] = false;
         this.forceUpdate();
-    }
+    };
 
     onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.newBookTitle = event.target.value;
@@ -280,76 +280,101 @@ export class LibraryApp extends React.Component {
                     <button data-test-id={"readFilterButton"} className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
                     <button data-test-id={"unreadFilterButton"} className="library-button incomplete-filter" onClick={this.setFilter.bind(this, 'incomplete')}>Unread</button>
                 </div>
-                <ul className="book-list"
-                    data-test-id={"bookList"}>
-                {books.map((b, index) => (
-                    <li className="book" data-test-id={"bookElement"}>
-                        {
-                            this.isEditing[index]
-                                ? <div>
-                                    <input
-                                        data-test-id={"editTitleInput"}
-                                        className="book-edit-input"
-                                        defaultValue={b.title} // Asumiendo que inputData se usa para la edición
-                                        onChange={this.onUpdatedTitleChange}
-                                    />
-                                    <input
-                                        data-test-id={"editCoverInput"}
-                                        className="book-edit-input"
-                                        defaultValue={b.pictureUrl} //
-                                        onChange={this.onUpdatedPictureUrlChange}
-                                    />
-                                </div>
-                                : <div className={"book-item"}>
-                                    <img src={b.pictureUrl} alt={b.title} height={160} width={130} className="book-cover"/>
-                                    <div>
-
-                                        <p className="title">
-                                        {b.title} {b.completed &&
-                                            <IonIcon
-                                                data-test-id="markAsReadIcon"
-                                                className={"complete-icon"} icon={checkmark}></IonIcon> }
-                                        </p>
-                                        {!this.isEditing[index] &&
-                                            <button className="book-button"
-                                                    data-test-id="markAsReadButton"
-                                                    onClick={this.toggleComplete.bind(this, index)}>
-                                                {b.completed ? 'Mark as Unread' : 'Mark as Read'}
-                                            </button>}
-                                        {!this.isEditing[index] &&
-                                            <button className="book-button"
-                                                    data-test-id="editButton"
-                                                    onClick={() => this.edit(index, b.title, b.pictureUrl)}><IonIcon icon={createOutline}/>
-                                            </button>
-                                        }
-                                        {!this.isEditing[index] &&
-                                            <button className="book-button book-delete-button"
-                                                    data-test-id="deleteButton"
-                                                    onClick={this.delete.bind(this, index)}>
-                                                <IonIcon icon={trash}/>
-                                            </button>}
-                                    </div>
-                                </div>
-                        }
-
-                        {this.isEditing[index] &&
-                            <div>
-                                <button className="library-button book-update-button"
-                                        data-test-id="updateButton"
-                                        onClick={this.update.bind(this, index)}>
-                                    Save
-                                </button>
-                                <button className="library-button book-update-button"
-                                        onClick={this.close.bind(this, index)}>
-                                    Cancel
-                                </button>
-                            </div>
-
-                        }
-                    </li>
-                ))}
+                <ul className="book-list" data-test-id={"bookList"}>
+                    {books.map((b, index) =>
+                        <BookComponent
+                            book={b}
+                            index={index}
+                            isEditing={this.isEditing[index]}
+                            onUpdatedTitleChange={this.onUpdatedTitleChange}
+                            onUpdatedPictureUrlChange={this.onUpdatedPictureUrlChange}
+                            toggleComplete={this.toggleComplete}
+                            edit={this.edit}
+                            deleteBook={this.delete}
+                            update={this.update}
+                            close={this.close}
+                        />)}
                 </ul>
             </div>
         );
     }
+}
+
+function BookComponent(props: {
+    book: Book,
+    index: number,
+    isEditing: boolean,
+    onUpdatedTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+    onUpdatedPictureUrlChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+    toggleComplete: (index: number) => void,
+    edit: (index: number, text: string, url: string) => void,
+    deleteBook: (index: number) => void,
+    update: (index: number) => void,
+    close: (index: number) => void
+}) {
+    return <li className="book" data-test-id={"bookElement"}>
+        {
+            props.isEditing
+                ? <div>
+                    <input
+                        data-test-id={"editTitleInput"}
+                        className="book-edit-input"
+                        defaultValue={props.book.title} // Asumiendo que inputData se usa para la edición
+                        onChange={props.onUpdatedTitleChange}
+                    />
+                    <input
+                        data-test-id={"editCoverInput"}
+                        className="book-edit-input"
+                        defaultValue={props.book.pictureUrl} //
+                        onChange={props.onUpdatedPictureUrlChange}
+                    />
+                </div>
+                : <div className={"book-item"}>
+                    <img src={props.book.pictureUrl} alt={props.book.title} height={160} width={130} className="book-cover"/>
+                    <div>
+
+                        <p className="title">
+                            {props.book.title} {props.book.completed &&
+                            <IonIcon
+                                data-test-id="markAsReadIcon"
+                                className={"complete-icon"} icon={checkmark}></IonIcon>}
+                        </p>
+                        {!props.isEditing &&
+                            <button className="book-button"
+                                    data-test-id="markAsReadButton"
+                                    onClick={()=> props.toggleComplete(props.index)}>
+                                {props.book.completed ? 'Mark as Unread' : 'Mark as Read'}
+                            </button>}
+                        {!props.isEditing &&
+                            <button className="book-button"
+                                    data-test-id="editButton"
+                                    onClick={() => props.edit(props.index, props.book.title, props.book.pictureUrl)}><IonIcon
+                                icon={createOutline}/>
+                            </button>
+                        }
+                        {!props.isEditing &&
+                            <button className="book-button book-delete-button"
+                                    data-test-id="deleteButton"
+                                    onClick={()=> props.deleteBook(props.index)}>
+                                <IonIcon icon={trash}/>
+                            </button>}
+                    </div>
+                </div>
+        }
+
+        {props.isEditing &&
+            <div>
+                <button className="library-button book-update-button"
+                        data-test-id="updateButton"
+                        onClick={()=> props.update(props.index)}>
+                    Save
+                </button>
+                <button className="library-button book-update-button"
+                        onClick={()=> props.close(props.index)}>
+                    Cancel
+                </button>
+            </div>
+
+        }
+    </li>;
 }
