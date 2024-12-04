@@ -284,14 +284,9 @@ export class LibraryApp extends React.Component {
                         <BookComponent
                             book={b}
                             index={index}
-                            isEditing={this.isEditing[index]}
-                            onUpdatedTitleChange={this.onUpdatedTitleChange}
-                            onUpdatedPictureUrlChange={this.onUpdatedPictureUrlChange}
                             toggleComplete={this.toggleComplete}
-                            edit={this.edit}
                             deleteBook={this.delete}
                             update={this.update}
-                            close={this.close}
                         />)}
                 </ul>
             </div>

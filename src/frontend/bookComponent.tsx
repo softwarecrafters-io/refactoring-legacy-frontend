@@ -12,14 +12,9 @@ type BookComponentState = {
 export function BookComponent(props: {
     book: Book,
     index: number,
-    isEditing: boolean,
-    onUpdatedTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
-    onUpdatedPictureUrlChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
     toggleComplete: (index: number) => void,
-    edit: (index: number, text: string, url: string) => void,
     deleteBook: (index: number) => void,
     update: (index: number, book:Book, title:string, pictureUrl:string) => void,
-    close: (index: number) => void
 }) {
     const [state, setState] = React.useState<BookComponentState>({
         isEditing: false,
