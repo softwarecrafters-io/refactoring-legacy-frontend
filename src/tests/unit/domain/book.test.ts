@@ -1,4 +1,4 @@
-import {createBook} from "../../frontend/domain/book";
+import {createBook} from "../../../frontend/domain/book";
 
 describe('The Book', ()=>{
     it('creates a book for a given valid title and picture', ()=>{
