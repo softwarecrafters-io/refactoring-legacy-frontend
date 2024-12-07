@@ -35,7 +35,7 @@ export class LibraryApp extends React.Component {
             .catch(error => console.log(error));
     }
 
-    add() {
+    add = () => {
         const min = 3; // Longitud mínima del texto
         const max = 100; // Longitud máxima del texto
         const forbidden = ['prohibited', 'forbidden', 'banned'];
@@ -97,7 +97,7 @@ export class LibraryApp extends React.Component {
                 }
             }
         }
-    }
+    };
 
     update = ((index:number, book:Book, title:string, pictureUrl:string) => {
         const min = 3; // Longitud mínima del texto
@@ -187,10 +187,10 @@ export class LibraryApp extends React.Component {
     };
 
 
-    setFilter(filter) {
+    setFilter = (filter: FilterKind) => {
         this.currentFilter = filter;
         this.forceUpdate();
-    }
+    };
 
     getBooks() {
         const fBooks = [];
@@ -241,14 +241,14 @@ export class LibraryApp extends React.Component {
                 <button
                     data-test-id={"addButton"}
                     className="library-button add-book-button"
-                    onClick={this.add.bind(this)}>
+                    onClick={this.add}>
                     Add Book
                 </button>
                 <h2>Books Read: {this.numberOfBooks}</h2>
                 <div>
-                    <button data-test-id={"allFilterButton"} className="library-button all-filter" onClick={this.setFilter.bind(this, 'all')}>All</button>
-                    <button data-test-id={"readFilterButton"} className="library-button completed-filter" onClick={this.setFilter.bind(this, 'completed')}>Read</button>
-                    <button data-test-id={"unreadFilterButton"} className="library-button incomplete-filter" onClick={this.setFilter.bind(this, 'incomplete')}>Unread</button>
+                    <button data-test-id={"allFilterButton"} className="library-button all-filter" onClick={()=>this.setFilter('all')}>All</button>
+                    <button data-test-id={"readFilterButton"} className="library-button completed-filter" onClick={()=>this.setFilter('completed')}>Read</button>
+                    <button data-test-id={"unreadFilterButton"} className="library-button incomplete-filter" onClick={()=>this.setFilter('incomplete')}>Unread</button>
                 </div>
                 <ul className="book-list" data-test-id={"bookList"}>
                     {books.map((b, index) =>
