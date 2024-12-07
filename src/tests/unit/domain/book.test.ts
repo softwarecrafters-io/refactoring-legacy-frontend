@@ -36,5 +36,13 @@ describe('The Book', ()=>{
        expect(() => createBook(title, picture))
            .toThrowError('Error: The title can only contain letters, numbers, and spaces.');
     });
+
+    it('does not allow to create a book when a title contains a prohibited word', ()=>{
+        const title = 'The Book is prohibited';
+        const picture = 'http://www.example.com/book.jpg';
+
+        expect(() => createBook(title, picture))
+          .toThrowError('Error: The title cannot include the prohibited word "prohibited"');
+    });
 });
 
