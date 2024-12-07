@@ -2,13 +2,11 @@ import * as React from "react";
 import {v4 as uuid} from 'uuid';
 import {BookComponent} from "./bookComponent";
 
-export class Book{
-    constructor(
-        readonly id: string,
-        readonly title: string,
-        readonly pictureUrl: string,
-        public completed = false)
-    {}
+export type Book ={
+    readonly id: string,
+    readonly title: string,
+    readonly pictureUrl: string,
+    readonly completed: boolean
 }
 
 type FilterKind = 'all' | 'completed' | 'incomplete';
@@ -153,15 +151,14 @@ export class LibraryApp extends React.Component {
     };
 
     toggleComplete = (index:number) => {
-        this.bookList[index].completed = !this.bookList[index].completed;
         fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completed: this.bookList[index].completed }),
+            body: JSON.stringify({ completed: !this.bookList[index].completed }),
         })
             .then(response => response.json())
             .then(data => {
-                // this.collection[index] = data;
+                this.bookList[index] = data;
                 this.bookList[index].completed ? this.numberOfBooks++ : this.numberOfBooks--;
                 this.forceUpdate();
             })
