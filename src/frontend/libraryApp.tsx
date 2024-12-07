@@ -94,64 +94,51 @@ export class LibraryApp extends React.Component {
     };
 
     update = ((index:number, book:Book, title:string, pictureUrl:string) => {
-        const min = 3; // Longitud mínima del texto
-        const max = 100; // Longitud máxima del texto
-        const words = ['prohibited', 'forbidden', 'banned'];
-        let temp = false;
-        try {
-            new URL(pictureUrl);
-            temp = true;
-        }
-        catch (e) {
-            temp = false;
-        }
-        if (!temp) {
+        const minTitleLength = 3;
+        const maxTitleLength = 100;
+        const forbiddenWords = ['prohibited', 'forbidden', 'banned'];
+        if (!isValidUrl(pictureUrl)) {
             alert('Error: The cover url is not valid');
+            return;
         }
-        // Validación de longitud mínima y máxima
-        else if (title.length < min || title.length > max) {
-            alert(`Error: The title must be between ${min} and ${max} characters long.`);
-        } else if (/[^a-zA-Z0-9\s]/.test(title)) {
-            // Validación de caracteres especiales
+        let hasValidLength = title.length < minTitleLength || title.length > maxTitleLength;
+        if (hasValidLength) {
+            alert(`Error: The title must be between ${minTitleLength} and ${maxTitleLength} characters long.`);
+            return;
+        }
+        let isValidTitle = /[^a-zA-Z0-9\s]/.test(title);
+        if (isValidTitle) {
             alert('Error: The title can only contain letters, numbers, and spaces.');
-        } else {
-            // Validación de palabras prohibidas
-            let temp1 = false;
-            for (let word of title.split(/\s+/)) {
-                if (words.includes(word)) {
-                    alert(`Error: The title cannot include the prohibited word "${word}"`);
-                    temp1 = true;
-                    break;
-                }
-            }
-
-            if (!temp1) {
-                // Validación de texto repetido (excluyendo el índice actual)
-                let temp2 = false;
-                for (let i = 0; i < this.bookList.length; i++) {
-                    if (i !== index && this.bookList[i].title === title) {
-                        temp2 = true;
-                        break;
-                    }
-                }
-
-                if (temp2) {
-                    alert('Error: The title is already in the collection.');
-                } else {
-                    // Si pasa todas las validaciones, actualizar el libro
-                    fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title: title, pictureUrl:pictureUrl, completed: this.bookList[index].completed }),
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            this.bookList[index] = data;
-                            this.forceUpdate();
-                        });
-                }
-            }
+            return;
         }
+        // Validación de palabras prohibidas
+        const words = title.split(/\s+/);
+        const foundForbiddenWord = words.find(word => forbiddenWords.includes(word));
+        if (foundForbiddenWord) {
+            alert(`Error: The title cannot include the prohibited word "${foundForbiddenWord}"`);
+            return;
+        }
+         // Validación de texto repetido (excluyendo el índice actual)
+        this.bookList.forEach((book, i) => {
+            if (i !== index && book.title === title) {
+                alert('Error: The title is already in the collection.');
+                return;
+            }
+        });
+        fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: title,
+                pictureUrl: pictureUrl,
+                completed: this.bookList[index].completed
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.bookList[index] = data;
+                this.forceUpdate();
+            });
     });
 
     delete = (index:number) => {
