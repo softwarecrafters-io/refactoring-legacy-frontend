@@ -41,5 +41,13 @@ describe('The Book', ()=>{
         expect(() => createBook(title, picture))
           .toThrowError('Error: The title cannot include the prohibited word "prohibited"');
     });
+
+    it('does not allow to create a book when a picture url is not valid', ()=>{
+        const title = 'The Book';
+        const picture = 'invalid-url';
+
+        expect(() => createBook(title, picture))
+          .toThrowError('Error: The cover url is not valid');
+    });
 });
 
