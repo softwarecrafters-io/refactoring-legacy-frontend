@@ -1,13 +1,7 @@
 import * as React from "react";
 import {v4 as uuid} from 'uuid';
 import {BookComponent} from "./bookComponent";
-
-export type Book ={
-    readonly id: string,
-    readonly title: string,
-    readonly pictureUrl: string,
-    readonly completed: boolean
-}
+import {Book} from "./domain/book";
 
 type FilterKind = 'all' | 'completed' | 'incomplete';
 
