@@ -8,9 +8,7 @@ export type Book = {
 }
 
 export function createBook(title: string, picture: string) {
-    if(!isValidUrl(picture)){
-        throw new Error('Error: The cover url is not valid');
-    }
+    ensureThatIsValidUrl(picture);
     ensureThatHaveValidLength(title);
     ensureThatOnlyContainsAlphanumeric(title);
     ensureThatNotContainsForbiddenWords(title);
@@ -22,12 +20,12 @@ export function createBook(title: string, picture: string) {
     }
 }
 
-function isValidUrl(url: string) {
+function ensureThatIsValidUrl(picture: string) {
     try {
-        new URL(url);
-        return true;
-    } catch (e) {
-        return false;
+        new URL(picture);
+    }
+    catch (_){
+        throw new Error('Error: The cover url is not valid');
     }
 }
 
