@@ -1,8 +1,5 @@
 import {createBook} from "../../../frontend/domain/book";
 
-//Error: The title can only contain letters, numbers, and spaces.
-//Error: The title cannot include the prohibited word "${foundForbiddenWord}"
-
 describe('The Book', ()=>{
     it('creates a book for a given valid title and picture', ()=>{
         const book = createBook('The Book', 'http://www.example.com/book.jpg');
