@@ -16,12 +16,9 @@ type FilterKind = 'all' | 'completed' | 'incomplete';
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
     newBookTitle = '';
-    updatedBookTitle = '';
     newBookPictureUrl = '';
-    updatedBooKPictureUrl = '';
     numberOfBooks = 0;
     currentFilter: FilterKind = 'all';
-    isEditing:boolean[] = [];
 
     constructor(props) {
         super(props);
@@ -33,9 +30,6 @@ export class LibraryApp extends React.Component {
             .then(response => response.json())
             .then(data => {
                 this.bookList = data;
-                for (let i = 0; i < this.bookList.length; i++) {
-                    this.isEditing.push(false);
-                }
                 this.forceUpdate();
             })
             .catch(error => console.log(error));
@@ -159,7 +153,6 @@ export class LibraryApp extends React.Component {
                         .then(response => response.json())
                         .then(data => {
                             this.bookList[index] = data;
-                            this.close(index);
                             this.forceUpdate();
                         });
                 }
@@ -213,18 +206,6 @@ export class LibraryApp extends React.Component {
         return fBooks;
     }
 
-    edit = (index:number, text:string, url:string) => {
-        this.updatedBookTitle = text;
-        this.updatedBooKPictureUrl = url
-        this.isEditing[index] = true;
-        this.forceUpdate();
-    };
-
-    close = index => {
-        this.isEditing[index] = false;
-        this.forceUpdate();
-    };
-
     onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.newBookTitle = event.target.value;
         this.forceUpdate();
@@ -232,16 +213,6 @@ export class LibraryApp extends React.Component {
 
     onPictureUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.newBookPictureUrl = event.target.value;
-        this.forceUpdate();
-    };
-
-    onUpdatedTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.updatedBookTitle = event.target.value;
-        this.forceUpdate();
-    };
-
-    onUpdatedPictureUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.updatedBooKPictureUrl = event.target.value;
         this.forceUpdate();
     };
 
