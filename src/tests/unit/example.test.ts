@@ -1,13 +1,4 @@
-import {v4 as uuid} from 'uuid';
-
-export function createBook(title: string, picture: string) {
-    return {
-        id: uuid(),
-        title: title,
-        pictureUrl: picture,
-        completed: false
-    }
-}
+import {createBook} from "../../frontend/domain/book";
 
 describe('The Book', ()=>{
     it('creates a book for a given valid title and picture', ()=>{
