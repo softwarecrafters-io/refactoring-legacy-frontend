@@ -1,7 +1,7 @@
 import * as React from "react";
 import {v4 as uuid} from 'uuid';
 import {BookComponent} from "./bookComponent";
-import {Book} from "./domain/book";
+import {Book, createBook} from "./domain/book";
 
 type FilterKind = 'all' | 'completed' | 'incomplete';
 
@@ -37,52 +37,30 @@ export class LibraryApp extends React.Component {
     }
 
     add = () => {
-        const minTitleLength = 3;
-        const maxTitleLength = 100;
-        const forbiddenWords = ['prohibited', 'forbidden', 'banned'];
-        if (!isValidUrl(this.newBookPictureUrl)) {
-            alert('Error: The cover url is not valid');
-            return;
-        }
-        let hasValidLength = this.newBookTitle.length < minTitleLength || this.newBookTitle.length > maxTitleLength;
-        if (hasValidLength) {
-            alert(`Error: The title must be between ${minTitleLength} and ${maxTitleLength} characters long.`);
-            return;
-        }
-        let isValidTitle = /[^a-zA-Z0-9\s]/.test(this.newBookTitle);
-        if (isValidTitle) {
-            alert('Error: The title can only contain letters, numbers, and spaces.');
-            return;
-        }
-        const words = this.newBookTitle.split(/\s+/);
-        let foundForbiddenWord = words.find(word => forbiddenWords.includes(word))
-        if(foundForbiddenWord){
-            alert(`Error: The title cannot include the prohibited word "${foundForbiddenWord}"`);
-            return;
-        }
-        this.bookList.forEach(book => {
-            if (book.title === this.newBookTitle) {
-                alert('Error: The title is already in the collection.');
-                return;
-            }
-        });
-        fetch('http://localhost:3000/api/', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                id: uuid(),
-                title: this.newBookTitle,
-                pictureUrl: this.newBookPictureUrl,
-                completed: false
-            }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                this.bookList.push(data);
-                this.newBookTitle = '';
-                this.newBookPictureUrl = '';
-                this.forceUpdate();
+        try{
+            const aBook = createBook(this.newBookTitle, this.newBookPictureUrl);
+            this.bookList.forEach(book => {
+                if (book.title === this.newBookTitle) {
+                    alert('Error: The title is already in the collection.');
+                    return;
+                }
             });
+            fetch('http://localhost:3000/api/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(aBook),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.bookList.push(data);
+                    this.newBookTitle = '';
+                    this.newBookPictureUrl = '';
+                    this.forceUpdate();
+                });
+        }
+        catch (e) {
+            alert(e.message);
+        }
     };
 
     update = ((index:number, book:Book, title:string, pictureUrl:string) => {
