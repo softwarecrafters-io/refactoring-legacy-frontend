@@ -17,6 +17,13 @@ export function updateTitle(book: Book, newTitle: string) {
     }
 }
 
+export function updatePicture(book: Book, newPicture: string) {
+    return {
+        ...book,
+        pictureUrl: newPicture
+    }
+}
+
 export function createBook(title: string, picture: string) {
     ensureThatIsValidUrl(picture);
     ensureThatHaveValidLength(title);

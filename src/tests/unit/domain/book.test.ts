@@ -1,4 +1,4 @@
-import {createBook, updateTitle} from "../../../frontend/domain/book";
+import {createBook, updatePicture, updateTitle} from "../../../frontend/domain/book";
 
 describe('The Book', ()=>{
     it('creates a book for a given valid title and picture', ()=>{
@@ -68,6 +68,18 @@ describe('The Book', ()=>{
 
         expect(() => updateTitle(book, newTitle))
           .toThrowError('Error: The title cannot include the prohibited word "prohibited"');
+    });
+
+    it('updates the picture url when the new one is valid', ()=>{
+        const book = createBook('The Book', 'http://www.example.com/book.jpg');
+        const newPicture = 'http://www.example.com/new-book.jpg';
+
+        const updatedBook = updatePicture(book, newPicture);
+
+        expect(updatedBook.title).toBe(book.title);
+        expect(updatedBook.pictureUrl).toBe(newPicture);
+        expect(updatedBook.id).toBe(book.id);
+        expect(updatedBook.completed).toBe(book.completed);
     });
 });
 
