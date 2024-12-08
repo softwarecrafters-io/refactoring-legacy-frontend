@@ -7,6 +7,13 @@ export type Book = {
     readonly completed: boolean
 }
 
+export function updateTitle(book: Book, newTitle: string) {
+    return {
+        ...book,
+        title: newTitle
+    }
+}
+
 export function createBook(title: string, picture: string) {
     ensureThatIsValidUrl(picture);
     ensureThatHaveValidLength(title);

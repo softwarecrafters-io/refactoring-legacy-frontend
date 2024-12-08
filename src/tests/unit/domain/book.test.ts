@@ -1,4 +1,4 @@
-import {createBook} from "../../../frontend/domain/book";
+import {createBook, updateTitle} from "../../../frontend/domain/book";
 
 describe('The Book', ()=>{
     it('creates a book for a given valid title and picture', ()=>{
@@ -48,6 +48,18 @@ describe('The Book', ()=>{
 
         expect(() => createBook(title, picture))
           .toThrowError('Error: The cover url is not valid');
+    });
+
+    it('updates the title when the new one is valid', ()=>{
+        const book = createBook('The Book', 'http://www.example.com/book.jpg');
+        const newTitle = 'The New Book';
+
+        const updatedBook = updateTitle(book, newTitle);
+
+        expect(updatedBook.title).toBe(newTitle);
+        expect(updatedBook.pictureUrl).toBe(book.pictureUrl);
+        expect(updatedBook.id).toBe(book.id);
+        expect(updatedBook.completed).toBe(book.completed);
     });
 });
 
