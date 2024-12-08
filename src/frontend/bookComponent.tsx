@@ -15,7 +15,7 @@ export function BookComponent(props: {
     index: number,
     toggleComplete: (index: number) => void,
     deleteBook: (index: number) => void,
-    update: (index: number, book:Book, title:string, pictureUrl:string) => void,
+    update: (book:Book, title:string, pictureUrl:string) => void,
 }) {
     const [state, setState] = React.useState<BookComponentState>({
         isEditing: false,
@@ -41,7 +41,7 @@ export function BookComponent(props: {
 
     const onUpdate = () => {
         setState(state => ({...state, isEditing: false}));
-        props.update(props.index, props.book, state.title, state.pictureUrl);
+        props.update(props.book, state.title, state.pictureUrl);
     }
 
     return <li className="book" data-test-id={"bookElement"}>

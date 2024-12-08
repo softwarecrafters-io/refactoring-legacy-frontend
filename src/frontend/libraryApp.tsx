@@ -1,7 +1,7 @@
 import * as React from "react";
 import {v4 as uuid} from 'uuid';
 import {BookComponent} from "./bookComponent";
-import {Book, createBook} from "./domain/book";
+import {Book, createBook, updatePicture, updateTitle} from "./domain/book";
 
 type FilterKind = 'all' | 'completed' | 'incomplete';
 
@@ -63,52 +63,31 @@ export class LibraryApp extends React.Component {
         }
     };
 
-    update = ((index:number, book:Book, title:string, pictureUrl:string) => {
-        const minTitleLength = 3;
-        const maxTitleLength = 100;
-        const forbiddenWords = ['prohibited', 'forbidden', 'banned'];
-        if (!isValidUrl(pictureUrl)) {
-            alert('Error: The cover url is not valid');
-            return;
-        }
-        let hasValidLength = title.length < minTitleLength || title.length > maxTitleLength;
-        if (hasValidLength) {
-            alert(`Error: The title must be between ${minTitleLength} and ${maxTitleLength} characters long.`);
-            return;
-        }
-        let isValidTitle = /[^a-zA-Z0-9\s]/.test(title);
-        if (isValidTitle) {
-            alert('Error: The title can only contain letters, numbers, and spaces.');
-            return;
-        }
-        // Validación de palabras prohibidas
-        const words = title.split(/\s+/);
-        const foundForbiddenWord = words.find(word => forbiddenWords.includes(word));
-        if (foundForbiddenWord) {
-            alert(`Error: The title cannot include the prohibited word "${foundForbiddenWord}"`);
-            return;
-        }
-         // Validación de texto repetido (excluyendo el índice actual)
-        this.bookList.forEach((book, i) => {
-            if (i !== index && book.title === title) {
-                alert('Error: The title is already in the collection.');
-                return;
-            }
-        });
-        fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                title: title,
-                pictureUrl: pictureUrl,
-                completed: this.bookList[index].completed
-            }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                this.bookList[index] = data;
-                this.forceUpdate();
+    update = ((book:Book, title:string, pictureUrl:string) => {
+        try{
+            const updatedBook = updatePicture(updateTitle(book, title), pictureUrl);
+            const index = this.bookList.findIndex(b => b.id === updatedBook.id);
+            // Validación de texto repetido (excluyendo el índice actual)
+            this.bookList.forEach((book, i) => {
+                if (i !== index && book.title === title) {
+                    alert('Error: The title is already in the collection.');
+                    return;
+                }
             });
+            fetch(`http://localhost:3000/api/${updatedBook.id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(updatedBook),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.bookList[index] = data;
+                    this.forceUpdate();
+                });
+        }
+        catch (e) {
+            alert(e.message);
+        }
     });
 
     delete = (index:number) => {
