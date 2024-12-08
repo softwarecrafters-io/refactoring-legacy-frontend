@@ -8,6 +8,9 @@ export type Book = {
 }
 
 export function updateTitle(book: Book, newTitle: string) {
+    ensureThatHaveValidLength(newTitle);
+    ensureThatOnlyContainsAlphanumeric(newTitle);
+    ensureThatNotContainsForbiddenWords(newTitle);
     return {
         ...book,
         title: newTitle
