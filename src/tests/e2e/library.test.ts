@@ -72,6 +72,22 @@ describe('Library App', () => {
     deleteBook();
   });
 
+  it('should not be able to update a book with invalid title', ()=>{
+    const aBook = 'New book';
+    addBook(aBook);
+    cy.get('[data-test-id="editButton"]').click();
+    cy.get('[data-test-id="editTitleInput"]').clear().type('a');
+
+    cy.get('[data-test-id="updateButton"]').click();
+
+    cy.on('window:alert', (str) => {
+      expect(str).to.equal('Error: The title must be between 3 and 100 characters long.');
+    });
+
+    cy.contains('[data-test-id="bookList"]', aBook).should('exist')
+    deleteBook();
+  });
+
 });
 
 function addBook(aBook: string) {
