@@ -18,6 +18,7 @@ export function updateTitle(book: Book, newTitle: string) {
 }
 
 export function updatePicture(book: Book, newPicture: string) {
+    ensureThatIsValidUrl(newPicture);
     return {
         ...book,
         pictureUrl: newPicture

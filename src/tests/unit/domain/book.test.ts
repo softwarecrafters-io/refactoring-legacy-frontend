@@ -81,5 +81,13 @@ describe('The Book', ()=>{
         expect(updatedBook.id).toBe(book.id);
         expect(updatedBook.completed).toBe(book.completed);
     });
+
+    it('does not allow to update the picture url when the new one is not valid', ()=>{
+        const book = createBook('The Book', 'http://www.example.com/book.jpg');
+        const newPicture = 'invalid-url';
+
+        expect(() => updatePicture(book, newPicture))
+          .toThrowError('Error: The cover url is not valid');
+    });
 });
 
