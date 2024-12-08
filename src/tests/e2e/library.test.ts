@@ -15,6 +15,17 @@ describe('Library App', () => {
     deleteBook();
   });
 
+  it('should not be able to add a book with an invalid title', ()=>{
+    const aBook = 'a';
+    addBook(aBook);
+
+    cy.on('window:alert', (str) => {
+        expect(str).to.equal('Error: The title must be between 3 and 100 characters long.');
+    });
+
+    cy.contains('[data-test-id="bookList"]', aBook).should('not.exist')
+  });
+
   it('should be able to delete a book', ()=>{
     const aBook = 'New book';
     addBook(aBook);
