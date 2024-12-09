@@ -121,18 +121,18 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     };
 
-    getBooks() {
-        const fBooks = [];
-        for (let i = 0; i < this.bookList.length; i++) {
+    getBooks(books: Book[], filter: FilterKind) {
+        const filteredBooks = [];
+        books.forEach(book => {
             if (
-                this.currentFilter === 'all' ||
-                (this.currentFilter === 'completed' && this.bookList[i].completed) ||
-                (this.currentFilter === 'incomplete' && !this.bookList[i].completed)
+                filter === 'all' ||
+                (filter === 'completed' && book.completed) ||
+                (filter === 'incomplete' && !book.completed)
             ) {
-                fBooks.push(this.bookList[i]);
+                filteredBooks.push(book);
             }
-        }
-        return fBooks;
+        });
+        return filteredBooks;
     }
 
     onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,7 +146,7 @@ export class LibraryApp extends React.Component {
     };
 
     render() {
-        const books = this.getBooks();
+        const books = this.getBooks(this.bookList, this.currentFilter);
 
         return (
             <div className="app-container">
