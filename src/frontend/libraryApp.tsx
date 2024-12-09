@@ -1,9 +1,7 @@
 import * as React from "react";
-import {v4 as uuid} from 'uuid';
 import {BookComponent} from "./bookComponent";
 import {Book, createBook, updatePicture, updateTitle} from "./domain/book";
-
-type FilterKind = 'all' | 'completed' | 'incomplete';
+import {filterBooks, FilterKind} from "./domain/services/FilterBook";
 
 function isValidUrl(url: string) {
     try {
@@ -12,20 +10,6 @@ function isValidUrl(url: string) {
     } catch (e) {
         return false;
     }
-}
-
-function filterBooks(books: Book[], filter: FilterKind) {
-    const filteredBooks = [];
-    books.forEach(book => {
-        if (
-            filter === 'all' ||
-            (filter === 'completed' && book.completed) ||
-            (filter === 'incomplete' && !book.completed)
-        ) {
-            filteredBooks.push(book);
-        }
-    });
-    return filteredBooks;
 }
 
 export class LibraryApp extends React.Component {
