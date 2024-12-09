@@ -12,4 +12,15 @@ describe('The Filter Book', ()=>{
 
         expect(filteredBooks).toEqual(books);
     });
+
+    it('retrieves only completed books when the filter is completed', ()=>{
+        const aBook = createBook('The Book', 'http://www.example.com/book.jpg');
+        const completedBook = toggleCompleted(aBook);
+        const anotherBook = createBook('Another Book', 'http://www.example.com/another-book.jpg');
+        const books = [completedBook, anotherBook];
+
+        const filteredBooks = filterBooks(books, 'completed');
+
+        expect(filteredBooks).toEqual([completedBook]);
+    });
 });
