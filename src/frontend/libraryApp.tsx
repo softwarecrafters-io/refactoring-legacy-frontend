@@ -3,15 +3,6 @@ import {BookComponent} from "./bookComponent";
 import {Book, createBook, updatePicture, updateTitle} from "./domain/book";
 import {filterBooks, FilterKind} from "./domain/services/FilterBook";
 
-function isValidUrl(url: string) {
-    try {
-        new URL(url);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
     newBookTitle = '';
