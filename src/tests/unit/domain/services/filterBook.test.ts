@@ -23,4 +23,15 @@ describe('The Filter Book', ()=>{
 
         expect(filteredBooks).toEqual([completedBook]);
     });
+
+    it('retrieves only incomplete books when the filter is incomplete', ()=>{
+        const aBook = createBook('The Book', 'http://www.example.com/book.jpg');
+        const completedBook = toggleCompleted(aBook);
+        const anotherBook = createBook('Another Book', 'http://www.example.com/another-book.jpg');
+        const books = [completedBook, anotherBook];
+
+        const filteredBooks = filterBooks(books, 'incomplete');
+
+        expect(filteredBooks).toEqual([anotherBook]);
+    });
 });
