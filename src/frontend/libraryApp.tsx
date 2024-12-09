@@ -14,6 +14,20 @@ function isValidUrl(url: string) {
     }
 }
 
+function filterBooks(books: Book[], filter: FilterKind) {
+    const filteredBooks = [];
+    books.forEach(book => {
+        if (
+            filter === 'all' ||
+            (filter === 'completed' && book.completed) ||
+            (filter === 'incomplete' && !book.completed)
+        ) {
+            filteredBooks.push(book);
+        }
+    });
+    return filteredBooks;
+}
+
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
     newBookTitle = '';
@@ -121,20 +135,6 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     };
 
-    getBooks(books: Book[], filter: FilterKind) {
-        const filteredBooks = [];
-        books.forEach(book => {
-            if (
-                filter === 'all' ||
-                (filter === 'completed' && book.completed) ||
-                (filter === 'incomplete' && !book.completed)
-            ) {
-                filteredBooks.push(book);
-            }
-        });
-        return filteredBooks;
-    }
-
     onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.newBookTitle = event.target.value;
         this.forceUpdate();
@@ -146,7 +146,7 @@ export class LibraryApp extends React.Component {
     };
 
     render() {
-        const books = this.getBooks(this.bookList, this.currentFilter);
+        const books = filterBooks(this.bookList, this.currentFilter);
 
         return (
             <div className="app-container">
