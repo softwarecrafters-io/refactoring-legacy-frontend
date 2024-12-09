@@ -7,6 +7,13 @@ export type Book = {
     readonly completed: boolean
 }
 
+export function toggleCompleted(book: Book) {
+    return {
+        ...book,
+        completed: !book.completed
+    }
+}
+
 export function updateTitle(book: Book, newTitle: string) {
     ensureThatHaveValidLength(newTitle);
     ensureThatOnlyContainsAlphanumeric(newTitle);
