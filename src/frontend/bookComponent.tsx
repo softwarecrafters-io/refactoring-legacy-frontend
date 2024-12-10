@@ -13,7 +13,7 @@ type BookComponentState = {
 export function BookComponent(props: {
     book: Book,
     index: number,
-    toggleComplete: (index: number) => void,
+    toggleComplete: (book:Book) => void,
     deleteBook: (book:Book) => void,
     update: (book:Book, title:string, pictureUrl:string) => void,
 }) {
@@ -75,7 +75,7 @@ export function BookComponent(props: {
                         {!state.isEditing &&
                             <button className="book-button"
                                     data-test-id="markAsReadButton"
-                                    onClick={() => props.toggleComplete(props.index)}>
+                                    onClick={() => props.toggleComplete(props.book)}>
                                 {props.book.completed ? 'Mark as Unread' : 'Mark as Read'}
                             </button>}
                         {!state.isEditing &&

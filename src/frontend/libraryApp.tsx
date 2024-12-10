@@ -80,8 +80,8 @@ export class LibraryApp extends React.Component {
             })
     };
 
-    toggleComplete = (index:number) => {
-        const book = this.bookList[index];
+    toggleComplete = (book:Book) => {
+        const index = this.bookList.findIndex(b => b.id === book.id);
         const updatedBook = toggleCompleted(book);
         this.bookRepository.update(updatedBook)
             .then(_ => {
