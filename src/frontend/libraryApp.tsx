@@ -2,6 +2,8 @@ import * as React from "react";
 import {BookComponent} from "./bookComponent";
 import {Book, createBook, updatePicture, updateTitle} from "./domain/book";
 import {filterBooks, FilterKind} from "./domain/services/FilterBook";
+import {BookRepository} from "./domain/bookRepository";
+import {createBookApiRepository} from "./infrastructure/bookApiRepository";
 
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
@@ -9,6 +11,7 @@ export class LibraryApp extends React.Component {
     newBookPictureUrl = '';
     numberOfBooks = 0;
     currentFilter: FilterKind = 'all';
+    bookRepository: BookRepository = createBookApiRepository('http://localhost:3000/api');
 
     constructor(props) {
         super(props);
@@ -16,8 +19,7 @@ export class LibraryApp extends React.Component {
     }
 
     private initialize() {
-        fetch('http://localhost:3000/api/')
-            .then(response => response.json())
+        this.bookRepository.getAll()
             .then(data => {
                 this.bookList = data;
                 this.forceUpdate();
@@ -34,14 +36,9 @@ export class LibraryApp extends React.Component {
                     return;
                 }
             });
-            fetch('http://localhost:3000/api/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(aBook),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    this.bookList.push(data);
+            this.bookRepository.add(aBook)
+                .then(_ => {
+                    this.bookList.push(aBook);
                     this.newBookTitle = '';
                     this.newBookPictureUrl = '';
                     this.forceUpdate();
@@ -63,14 +60,9 @@ export class LibraryApp extends React.Component {
                     return;
                 }
             });
-            fetch(`http://localhost:3000/api/${updatedBook.id}`, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(updatedBook),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    this.bookList[index] = data;
+            this.bookRepository.update(updatedBook)
+                .then(_ => {
+                    this.bookList[index] = updatedBook;
                     this.forceUpdate();
                 });
         }
@@ -80,7 +72,7 @@ export class LibraryApp extends React.Component {
     });
 
     delete = (index:number) => {
-        fetch(`http://localhost:3000/api/${this.bookList[index].id}`, { method: 'DELETE' })
+        this.bookRepository.remove(this.bookList[index])
             .then(() => {
                 if (this.bookList[index].completed) {
                     this.numberOfBooks--;
