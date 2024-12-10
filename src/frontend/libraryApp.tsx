@@ -68,15 +68,8 @@ export class LibraryApp extends React.Component {
         }
     });
 
-    private ensureThatBookIsNotRepeated(updatedBook: Book, books: Book[] = this.bookList) {
-        books.forEach((b, i) => {
-            if (b.id !== updatedBook.id && b.title === updatedBook.title) {
-                throw new Error('Error: The title is already in the collection.');
-            }
-        });
-    }
-
-    delete = (index:number) => {
+    delete = (book:Book) => {
+        const index = this.bookList.findIndex(b => b.id === book.id);
         this.bookRepository.remove(this.bookList[index])
             .then(() => {
                 if (this.bookList[index].completed) {

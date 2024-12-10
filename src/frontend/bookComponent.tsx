@@ -14,7 +14,7 @@ export function BookComponent(props: {
     book: Book,
     index: number,
     toggleComplete: (index: number) => void,
-    deleteBook: (index: number) => void,
+    deleteBook: (book:Book) => void,
     update: (book:Book, title:string, pictureUrl:string) => void,
 }) {
     const [state, setState] = React.useState<BookComponentState>({
@@ -89,7 +89,7 @@ export function BookComponent(props: {
                         {!state.isEditing &&
                             <button className="book-button book-delete-button"
                                     data-test-id="deleteButton"
-                                    onClick={() => props.deleteBook(props.index)}>
+                                    onClick={() => props.deleteBook(props.book)}>
                                 <IonIcon icon={trash}/>
                             </button>}
                     </div>
