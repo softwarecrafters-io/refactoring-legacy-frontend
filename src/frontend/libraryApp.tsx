@@ -1,6 +1,6 @@
 import * as React from "react";
 import {BookComponent} from "./bookComponent";
-import {Book, createBook, updatePicture, updateTitle} from "./domain/book";
+import {Book, createBook, toggleCompleted, updatePicture, updateTitle} from "./domain/book";
 import {filterBooks, FilterKind} from "./domain/services/FilterBook";
 import {BookRepository} from "./domain/bookRepository";
 import {createBookApiRepository} from "./infrastructure/bookApiRepository";
@@ -83,15 +83,12 @@ export class LibraryApp extends React.Component {
     };
 
     toggleComplete = (index:number) => {
-        fetch(`http://localhost:3000/api/${this.bookList[index].id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completed: !this.bookList[index].completed }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                this.bookList[index] = data;
-                this.bookList[index].completed ? this.numberOfBooks++ : this.numberOfBooks--;
+        const book = this.bookList[index];
+        const updatedBook = toggleCompleted(book);
+        this.bookRepository.update(updatedBook)
+            .then(_ => {
+                this.bookList[index] = updatedBook;
+                book.completed ? this.numberOfBooks++ : this.numberOfBooks--;
                 this.forceUpdate();
             })
     };
