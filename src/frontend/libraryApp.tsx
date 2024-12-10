@@ -5,6 +5,14 @@ import {filterBooks, FilterKind} from "./domain/services/FilterBook";
 import {BookRepository} from "./domain/bookRepository";
 import {createBookApiRepository} from "./infrastructure/bookApiRepository";
 
+function ensureThatBookIsNotRepeated(book: Book, books: Book[] = this.bookList) {
+    books.forEach((b, i) => {
+        if (b.id !== book.id && b.title === book.title) {
+            throw new Error('Error: The title is already in the collection.');
+        }
+    });
+}
+
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
     newBookTitle = '';
@@ -30,12 +38,7 @@ export class LibraryApp extends React.Component {
     add = () => {
         try{
             const aBook = createBook(this.newBookTitle, this.newBookPictureUrl);
-            this.bookList.forEach(book => {
-                if (book.title === this.newBookTitle) {
-                    alert('Error: The title is already in the collection.');
-                    return;
-                }
-            });
+            ensureThatBookIsNotRepeated(aBook, this.bookList);
             this.bookRepository.add(aBook)
                 .then(_ => {
                     this.bookList.push(aBook);
@@ -53,13 +56,7 @@ export class LibraryApp extends React.Component {
         try{
             const updatedBook = updatePicture(updateTitle(book, title), pictureUrl);
             const index = this.bookList.findIndex(b => b.id === updatedBook.id);
-            // Validación de texto repetido (excluyendo el índice actual)
-            this.bookList.forEach((book, i) => {
-                if (i !== index && book.title === title) {
-                    alert('Error: The title is already in the collection.');
-                    return;
-                }
-            });
+            ensureThatBookIsNotRepeated(updatedBook, this.bookList);
             this.bookRepository.update(updatedBook)
                 .then(_ => {
                     this.bookList[index] = updatedBook;
@@ -70,6 +67,14 @@ export class LibraryApp extends React.Component {
             alert(e.message);
         }
     });
+
+    private ensureThatBookIsNotRepeated(updatedBook: Book, books: Book[] = this.bookList) {
+        books.forEach((b, i) => {
+            if (b.id !== updatedBook.id && b.title === updatedBook.title) {
+                throw new Error('Error: The title is already in the collection.');
+            }
+        });
+    }
 
     delete = (index:number) => {
         this.bookRepository.remove(this.bookList[index])
