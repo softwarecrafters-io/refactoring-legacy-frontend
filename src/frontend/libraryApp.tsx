@@ -5,7 +5,7 @@ import {filterBooks, FilterKind} from "./domain/services/FilterBook";
 import {BookRepository} from "./domain/bookRepository";
 import {createBookApiRepository} from "./infrastructure/bookApiRepository";
 
-function ensureThatBookIsNotRepeated(book: Book, books: Book[] = this.bookList) {
+function ensureThatBookIsNotRepeated(book: Book, books: Book[]) {
     books.forEach((b, i) => {
         if (b.id !== book.id && b.title === book.title) {
             throw new Error('Error: The title is already in the collection.');
@@ -32,7 +32,6 @@ export class LibraryApp extends React.Component {
                 this.bookList = data;
                 this.forceUpdate();
             })
-            .catch(error => console.log(error));
     }
 
     add = () => {
@@ -90,7 +89,6 @@ export class LibraryApp extends React.Component {
                 this.forceUpdate();
             })
     };
-
 
     setFilter = (filter: FilterKind) => {
         this.currentFilter = filter;
