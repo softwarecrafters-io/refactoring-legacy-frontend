@@ -28,27 +28,31 @@ export class LibraryApp extends React.Component {
 
     private initialize() {
         this.bookRepository.getAll()
-            .then(data => {
-                this.bookList = data;
-                this.forceUpdate();
-            })
+            .then(this.onGetBooks)
     }
+
+    private onGetBooks = (data: Book[]) => {
+        this.bookList = data;
+        this.forceUpdate();
+    };
 
     add = () => {
         try{
             const aBook = createBook(this.newBookTitle, this.newBookPictureUrl);
             ensureThatBookIsNotRepeated(aBook, this.bookList);
             this.bookRepository.add(aBook)
-                .then(_ => {
-                    this.bookList.push(aBook);
-                    this.newBookTitle = '';
-                    this.newBookPictureUrl = '';
-                    this.forceUpdate();
-                });
+                .then(_ => this.onAddBook(aBook));
         }
         catch (e) {
             alert(e.message);
         }
+    };
+
+    private onAddBook = (aBook: Book) => {
+        this.bookList.push(aBook);
+        this.newBookTitle = '';
+        this.newBookPictureUrl = '';
+        this.forceUpdate();
     };
 
     update = ((book:Book, title:string, pictureUrl:string) => {
@@ -58,8 +62,7 @@ export class LibraryApp extends React.Component {
             ensureThatBookIsNotRepeated(updatedBook, this.bookList);
             this.bookRepository.update(updatedBook)
                 .then(_ => {
-                    this.bookList[index] = updatedBook;
-                    this.forceUpdate();
+                    this.onUpdateBook(updatedBook);
                 });
         }
         catch (e) {
@@ -67,27 +70,40 @@ export class LibraryApp extends React.Component {
         }
     });
 
+    private onUpdateBook = (updatedBook: Book) => {
+        const index = this.bookList.findIndex(b => b.id === updatedBook.id);
+
+        this.bookList[index] = updatedBook;
+        this.forceUpdate();
+    };
+
     delete = (book:Book) => {
-        const index = this.bookList.findIndex(b => b.id === book.id);
-        this.bookRepository.remove(this.bookList[index])
+        this.bookRepository.remove(book)
             .then(() => {
-                if (this.bookList[index].completed) {
-                    this.numberOfBooks--;
-                }
-                this.bookList.splice(index, 1);
-                this.forceUpdate();
+                this.onDeleteBook(book);
             })
     };
 
-    toggleComplete = (book:Book) => {
+    private onDeleteBook = (book:Book) => {
         const index = this.bookList.findIndex(b => b.id === book.id);
+        if (this.bookList[index].completed) {
+            this.numberOfBooks--;
+        }
+        this.bookList.splice(index, 1);
+        this.forceUpdate();
+    };
+
+    toggleComplete = (book:Book) => {
         const updatedBook = toggleCompleted(book);
         this.bookRepository.update(updatedBook)
-            .then(_ => {
-                this.bookList[index] = updatedBook;
-                book.completed ? this.numberOfBooks++ : this.numberOfBooks--;
-                this.forceUpdate();
-            })
+            .then(_ => this.onToggleBook(updatedBook))
+    };
+
+    private onToggleBook = (updatedBook: Book) => {
+        const index = this.bookList.findIndex(b => b.id === updatedBook.id);
+        this.bookList[index] = updatedBook;
+        updatedBook.completed ? this.numberOfBooks++ : this.numberOfBooks--;
+        this.forceUpdate();
     };
 
     setFilter = (filter: FilterKind) => {
