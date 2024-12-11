@@ -1,44 +1,10 @@
 import * as React from "react";
 import {BookComponent} from "./bookComponent";
-import {
-    Book,
-    createBook,
-    ensureThatBookIsNotRepeated,
-    toggleCompleted,
-    updatePicture,
-    updateTitle
-} from "./domain/book";
+import {Book} from "./domain/book";
 import {filterBooks, FilterKind} from "./domain/services/FilterBook";
 import {BookRepository} from "./domain/bookRepository";
 import {createBookApiRepository} from "./infrastructure/bookApiRepository";
-
-async function getAllBooks(bookRepository: BookRepository) {
-    return await bookRepository.getAll();
-}
-
-const addBook = async (bookRepository: BookRepository, books: Book[], title: string, pictureUrl: string ) => {
-    const aBook = createBook(title, pictureUrl);
-    ensureThatBookIsNotRepeated(aBook, books);
-    await bookRepository.add(aBook)
-    return aBook;
-};
-
-const updateBook = async (bookRepository: BookRepository, books: Book[], pictureUrl: string, book: Book, title: string) => {
-    const updatedBook = updatePicture(updateTitle(book, title), pictureUrl);
-    ensureThatBookIsNotRepeated(updatedBook, books);
-    await bookRepository.update(updatedBook)
-    return updatedBook;
-};
-
-const removeBook = async (bookRepository: BookRepository, book: Book) => {
-    await bookRepository.remove(book)
-};
-
-const toggleToRead = async (bookRepository: BookRepository, book: Book) => {
-    const updatedBook = toggleCompleted(book);
-    await bookRepository.update(updatedBook)
-    return updatedBook;
-};
+import {addBook, getAllBooks, removeBook, toggleToRead, updateBook} from "./application/libraryUseCase";
 
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
