@@ -13,6 +13,10 @@ function ensureThatBookIsNotRepeated(book: Book, books: Book[]) {
     });
 }
 
+async function getAllBooks(bookRepository: BookRepository) {
+    return await bookRepository.getAll();
+}
+
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
     newBookTitle = '';
@@ -27,7 +31,7 @@ export class LibraryApp extends React.Component {
     }
 
     private async initialize() {
-        const books = await this.bookRepository.getAll()
+        const books = await getAllBooks(this.bookRepository);
         this.onGetBooks(books);
     }
 
