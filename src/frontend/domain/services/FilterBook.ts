@@ -2,7 +2,7 @@ import {Book} from "../book";
 
 export type FilterKind = 'all' | 'completed' | 'incomplete';
 
-export function filterBooks(books: Book[], filter: FilterKind) {
+export function filterBooks(books: Book[], filter: FilterKind): Book[] {
     const filteredBooks = [];
     books.forEach(book => {
         if (
