@@ -4,7 +4,8 @@ import {Book} from "./domain/book";
 import {filterBooks, FilterKind} from "./domain/services/FilterBook";
 import {BookRepository} from "./domain/bookRepository";
 import {createBookApiRepository} from "./infrastructure/bookApiRepository";
-import {addBook, getAllBooks, removeBook, toggleToRead, updateBook} from "./application/libraryUseCase";
+import {createLibraryUseCase} from "./infrastructure/factory";
+import {libraryUseCase} from "./application/libraryUseCase";
 
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
@@ -12,7 +13,7 @@ export class LibraryApp extends React.Component {
     newBookPictureUrl = '';
     numberOfBooks = 0;
     currentFilter: FilterKind = 'all';
-    bookRepository: BookRepository = createBookApiRepository('http://localhost:3000/api');
+    libraryUseCase = createLibraryUseCase();
 
     constructor(props) {
         super(props);
@@ -20,7 +21,7 @@ export class LibraryApp extends React.Component {
     }
 
     private async initialize() {
-        const books = await getAllBooks(this.bookRepository);
+        const books = await this.libraryUseCase.getAllBooks();
         this.onGetBooks(books);
     }
 
@@ -31,7 +32,7 @@ export class LibraryApp extends React.Component {
 
     add = async () => {
         try{
-            const aBook = await addBook(this.bookRepository, this.bookList, this.newBookTitle, this.newBookPictureUrl);
+            const aBook = await this.libraryUseCase.addBook(this.bookList, this.newBookTitle, this.newBookPictureUrl);
             this.onAddBook(aBook);
         }
         catch (e) {
@@ -48,7 +49,7 @@ export class LibraryApp extends React.Component {
 
     update = async (book:Book, title:string, pictureUrl:string) => {
         try{
-            const updatedBook = await updateBook(this.bookRepository, this.bookList, pictureUrl, book, title);
+            const updatedBook = await this.libraryUseCase.updateBook(this.bookList, pictureUrl, book, title);
             this.onUpdateBook(updatedBook);
         }
         catch (e) {
@@ -63,7 +64,7 @@ export class LibraryApp extends React.Component {
     };
 
     delete = async (book:Book) => {
-        await removeBook(this.bookRepository, book);
+        await this.libraryUseCase.removeBook(book);
         this.onDeleteBook(book);
     };
 
@@ -77,7 +78,7 @@ export class LibraryApp extends React.Component {
     };
 
     toggleComplete = async (book:Book) => {
-        const updatedBook = await toggleToRead(this.bookRepository, book);
+        const updatedBook = await this.libraryUseCase.toggleToRead(book);
         this.onToggleBook(updatedBook)
     };
 
