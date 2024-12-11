@@ -26,9 +26,9 @@ export class LibraryApp extends React.Component {
         this.initialize();
     }
 
-    private initialize() {
-        this.bookRepository.getAll()
-            .then(this.onGetBooks)
+    private async initialize() {
+        const books = await this.bookRepository.getAll()
+        this.onGetBooks(books);
     }
 
     private onGetBooks = (data: Book[]) => {
@@ -36,12 +36,12 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     };
 
-    add = () => {
+    add = async () => {
         try{
             const aBook = createBook(this.newBookTitle, this.newBookPictureUrl);
             ensureThatBookIsNotRepeated(aBook, this.bookList);
-            this.bookRepository.add(aBook)
-                .then(_ => this.onAddBook(aBook));
+            await this.bookRepository.add(aBook)
+            this.onAddBook(aBook);
         }
         catch (e) {
             alert(e.message);
@@ -55,20 +55,18 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     };
 
-    update = ((book:Book, title:string, pictureUrl:string) => {
+    update = async (book:Book, title:string, pictureUrl:string) => {
         try{
             const updatedBook = updatePicture(updateTitle(book, title), pictureUrl);
             const index = this.bookList.findIndex(b => b.id === updatedBook.id);
             ensureThatBookIsNotRepeated(updatedBook, this.bookList);
-            this.bookRepository.update(updatedBook)
-                .then(_ => {
-                    this.onUpdateBook(updatedBook);
-                });
+            await this.bookRepository.update(updatedBook)
+            this.onUpdateBook(updatedBook);
         }
         catch (e) {
             alert(e.message);
         }
-    });
+    };
 
     private onUpdateBook = (updatedBook: Book) => {
         const index = this.bookList.findIndex(b => b.id === updatedBook.id);
@@ -77,11 +75,9 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     };
 
-    delete = (book:Book) => {
-        this.bookRepository.remove(book)
-            .then(() => {
-                this.onDeleteBook(book);
-            })
+    delete = async (book:Book) => {
+        await this.bookRepository.remove(book)
+        this.onDeleteBook(book);
     };
 
     private onDeleteBook = (book:Book) => {
@@ -93,10 +89,10 @@ export class LibraryApp extends React.Component {
         this.forceUpdate();
     };
 
-    toggleComplete = (book:Book) => {
+    toggleComplete = async (book:Book) => {
         const updatedBook = toggleCompleted(book);
-        this.bookRepository.update(updatedBook)
-            .then(_ => this.onToggleBook(updatedBook))
+        await this.bookRepository.update(updatedBook)
+        this.onToggleBook(updatedBook)
     };
 
     private onToggleBook = (updatedBook: Book) => {
