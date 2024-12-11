@@ -25,54 +25,37 @@ export class LibraryApp extends React.Component<{useCase:LibraryUseCase}, Librar
     }
 
     private async initialize() {
-        const books = await this.props.useCase.getAllBooks();
-        this.onGetBooks(books);
-    }
-
-    private onGetBooks = (data: Book[]) => {
-        this.bookList = data;
+        this.bookList = await this.props.useCase.getAllBooks();
         this.forceUpdate();
-    };
+    }
 
     add = async () => {
         try{
             const aBook = await this.props.useCase.addBook(this.bookList, this.newBookTitle, this.newBookPictureUrl);
-            this.onAddBook(aBook);
+            this.bookList.push(aBook);
+            this.newBookTitle = '';
+            this.newBookPictureUrl = '';
+            this.forceUpdate();
         }
         catch (e) {
             alert(e.message);
         }
-    };
-
-    private onAddBook = (aBook: Book) => {
-        this.bookList.push(aBook);
-        this.newBookTitle = '';
-        this.newBookPictureUrl = '';
-        this.forceUpdate();
     };
 
     update = async (book:Book, title:string, pictureUrl:string) => {
         try{
             const updatedBook = await this.props.useCase.updateBook(this.bookList, pictureUrl, book, title);
-            this.onUpdateBook(updatedBook);
+            const index = this.bookList.findIndex(b => b.id === updatedBook.id);
+            this.bookList[index] = updatedBook;
+            this.forceUpdate();
         }
         catch (e) {
             alert(e.message);
         }
     };
 
-    private onUpdateBook = (updatedBook: Book) => {
-        const index = this.bookList.findIndex(b => b.id === updatedBook.id);
-        this.bookList[index] = updatedBook;
-        this.forceUpdate();
-    };
-
     delete = async (book:Book) => {
         await this.props.useCase.removeBook(book);
-        this.onDeleteBook(book);
-    };
-
-    private onDeleteBook = (book:Book) => {
         const index = this.bookList.findIndex(b => b.id === book.id);
         if (this.bookList[index].completed) {
             this.numberOfBooks--;
@@ -83,10 +66,6 @@ export class LibraryApp extends React.Component<{useCase:LibraryUseCase}, Librar
 
     toggleComplete = async (book:Book) => {
         const updatedBook = await this.props.useCase.toggleToRead(book);
-        this.onToggleBook(updatedBook)
-    };
-
-    private onToggleBook = (updatedBook: Book) => {
         const index = this.bookList.findIndex(b => b.id === updatedBook.id);
         this.bookList[index] = updatedBook;
         updatedBook.completed ? this.numberOfBooks++ : this.numberOfBooks--;
