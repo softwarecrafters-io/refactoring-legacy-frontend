@@ -8,7 +8,15 @@ import {
     updateTitle
 } from "../domain/book";
 
-export const libraryUseCase = (bookRepository: BookRepository) => {
+export type LibraryUseCase = {
+    getAllBooks: () => Promise<Book[]>;
+    addBook: (books: Book[], title: string, pictureUrl: string) => Promise<Book>;
+    updateBook: (books: Book[], pictureUrl: string, book: Book, title: string) => Promise<Book>;
+    removeBook: (book: Book) => Promise<void>;
+    toggleToRead: (book: Book) => Promise<Book>;
+}
+
+export const libraryUseCase = (bookRepository: BookRepository): LibraryUseCase => {
     const getAllBooks = async () => await bookRepository.getAll();
 
     const addBook = async (books: Book[], title: string, pictureUrl: string) => {

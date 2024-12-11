@@ -2,18 +2,22 @@ import * as React from "react";
 import {BookComponent} from "./bookComponent";
 import {Book} from "./domain/book";
 import {filterBooks, FilterKind} from "./domain/services/FilterBook";
-import {BookRepository} from "./domain/bookRepository";
-import {createBookApiRepository} from "./infrastructure/bookApiRepository";
-import {createLibraryUseCase} from "./infrastructure/factory";
-import {libraryUseCase} from "./application/libraryUseCase";
+import {LibraryUseCase} from "./application/libraryUseCase";
 
-export class LibraryApp extends React.Component {
+type LibraryAppState = {
+    bookList: Book[],
+    newBookTitle: string,
+    newBookPictureUrl: string,
+    numberOfBooks: number,
+    currentFilter: FilterKind,
+}
+
+export class LibraryApp extends React.Component<{useCase:LibraryUseCase}, LibraryAppState> {
     bookList: Book[] = [];
     newBookTitle = '';
     newBookPictureUrl = '';
     numberOfBooks = 0;
     currentFilter: FilterKind = 'all';
-    libraryUseCase = createLibraryUseCase();
 
     constructor(props) {
         super(props);
@@ -21,7 +25,7 @@ export class LibraryApp extends React.Component {
     }
 
     private async initialize() {
-        const books = await this.libraryUseCase.getAllBooks();
+        const books = await this.props.useCase.getAllBooks();
         this.onGetBooks(books);
     }
 
@@ -32,7 +36,7 @@ export class LibraryApp extends React.Component {
 
     add = async () => {
         try{
-            const aBook = await this.libraryUseCase.addBook(this.bookList, this.newBookTitle, this.newBookPictureUrl);
+            const aBook = await this.props.useCase.addBook(this.bookList, this.newBookTitle, this.newBookPictureUrl);
             this.onAddBook(aBook);
         }
         catch (e) {
@@ -49,7 +53,7 @@ export class LibraryApp extends React.Component {
 
     update = async (book:Book, title:string, pictureUrl:string) => {
         try{
-            const updatedBook = await this.libraryUseCase.updateBook(this.bookList, pictureUrl, book, title);
+            const updatedBook = await this.props.useCase.updateBook(this.bookList, pictureUrl, book, title);
             this.onUpdateBook(updatedBook);
         }
         catch (e) {
@@ -64,7 +68,7 @@ export class LibraryApp extends React.Component {
     };
 
     delete = async (book:Book) => {
-        await this.libraryUseCase.removeBook(book);
+        await this.props.useCase.removeBook(book);
         this.onDeleteBook(book);
     };
 
@@ -78,7 +82,7 @@ export class LibraryApp extends React.Component {
     };
 
     toggleComplete = async (book:Book) => {
-        const updatedBook = await this.libraryUseCase.toggleToRead(book);
+        const updatedBook = await this.props.useCase.toggleToRead(book);
         this.onToggleBook(updatedBook)
     };
 
