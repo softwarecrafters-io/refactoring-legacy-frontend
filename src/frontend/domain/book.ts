@@ -74,3 +74,11 @@ function ensureThatNotContainsForbiddenWords(title: string) {
         throw new Error(`Error: The title cannot include the prohibited word "${foundForbiddenWord}"`);
     }
 }
+
+export function ensureThatBookIsNotRepeated(book: Book, books: Book[]) {
+    books.forEach((b, i) => {
+        if (b.id !== book.id && b.title === book.title) {
+            throw new Error('Error: The title is already in the collection.');
+        }
+    });
+}
