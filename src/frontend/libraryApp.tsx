@@ -24,6 +24,17 @@ async function addBook(bookRepository: BookRepository, books: Book[], title: str
     return aBook;
 }
 
+async function updateBook(bookRepository: BookRepository, books: Book[], pictureUrl: string, book: Book, title: string) {
+    const updatedBook = updatePicture(updateTitle(book, title), pictureUrl);
+    ensureThatBookIsNotRepeated(updatedBook, books);
+    await bookRepository.update(updatedBook)
+    return updatedBook;
+}
+
+async function removeBook(bookRepository: BookRepository, book: Book) {
+    await bookRepository.remove(book)
+}
+
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
     newBookTitle = '';
@@ -66,10 +77,7 @@ export class LibraryApp extends React.Component {
 
     update = async (book:Book, title:string, pictureUrl:string) => {
         try{
-            const updatedBook = updatePicture(updateTitle(book, title), pictureUrl);
-            const index = this.bookList.findIndex(b => b.id === updatedBook.id);
-            ensureThatBookIsNotRepeated(updatedBook, this.bookList);
-            await this.bookRepository.update(updatedBook)
+            const updatedBook = await updateBook(this.bookRepository, this.bookList, pictureUrl, book, title);
             this.onUpdateBook(updatedBook);
         }
         catch (e) {
@@ -85,7 +93,7 @@ export class LibraryApp extends React.Component {
     };
 
     delete = async (book:Book) => {
-        await this.bookRepository.remove(book)
+        await removeBook(this.bookRepository, book);
         this.onDeleteBook(book);
     };
 
