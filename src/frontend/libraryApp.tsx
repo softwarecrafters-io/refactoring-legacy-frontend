@@ -17,6 +17,13 @@ async function getAllBooks(bookRepository: BookRepository) {
     return await bookRepository.getAll();
 }
 
+async function addBook(bookRepository: BookRepository, books: Book[], title: string, pictureUrl: string ) {
+    const aBook = createBook(title, pictureUrl);
+    ensureThatBookIsNotRepeated(aBook, books);
+    await bookRepository.add(aBook)
+    return aBook;
+}
+
 export class LibraryApp extends React.Component {
     bookList: Book[] = [];
     newBookTitle = '';
@@ -42,9 +49,7 @@ export class LibraryApp extends React.Component {
 
     add = async () => {
         try{
-            const aBook = createBook(this.newBookTitle, this.newBookPictureUrl);
-            ensureThatBookIsNotRepeated(aBook, this.bookList);
-            await this.bookRepository.add(aBook)
+            const aBook = await addBook(this.bookRepository, this.bookList, this.newBookTitle, this.newBookPictureUrl);
             this.onAddBook(aBook);
         }
         catch (e) {
