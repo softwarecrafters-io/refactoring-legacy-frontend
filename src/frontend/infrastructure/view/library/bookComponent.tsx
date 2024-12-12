@@ -2,7 +2,7 @@ import * as React from "react";
 import {IonIcon} from "@ionic/react";
 import {checkmark, createOutline, trash} from "ionicons/icons";
 
-import {Book} from "./domain/book";
+import {Book} from "../../../domain/book";
 
 type BookComponentState = {
     isEditing: boolean,

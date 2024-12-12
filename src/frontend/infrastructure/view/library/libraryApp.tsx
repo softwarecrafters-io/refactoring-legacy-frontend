@@ -1,8 +1,8 @@
 import * as React from "react";
 import {BookComponent} from "./bookComponent";
-import {Book} from "./domain/book";
-import {filterBooks, FilterKind} from "./domain/services/FilterBook";
-import {LibraryUseCase} from "./application/libraryUseCase";
+import {Book} from "../../../domain/book";
+import {filterBooks, FilterKind} from "../../../domain/services/FilterBook";
+import {LibraryUseCase} from "../../../application/libraryUseCase";
 import {useEffect} from "react";
 
 type LibraryAppState = {
