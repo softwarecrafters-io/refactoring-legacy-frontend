@@ -4,7 +4,7 @@ import {LibraryUseCase} from "../../../application/libraryUseCase";
 import * as React from "react";
 
 type LibraryAppState = {
-    readonly bookList: Book[],
+    readonly bookList: ReadonlyArray<Book>,
     readonly newBookTitle: string,
     readonly newBookPictureUrl: string,
     readonly currentFilter: FilterKind,
@@ -27,7 +27,7 @@ export function useLibraryApp(useCase: LibraryUseCase) {
 
     const add = async () => {
         try {
-            const aBook = await useCase.addBook(state.bookList, state.newBookTitle, state.newBookPictureUrl);
+            const aBook = await useCase.addBook(state.bookList as Book[], state.newBookTitle, state.newBookPictureUrl);
             setState(state => ({
                 ...state,
                 bookList: [...state.bookList, aBook],
@@ -41,10 +41,9 @@ export function useLibraryApp(useCase: LibraryUseCase) {
 
     const update = async (book: Book, title: string, pictureUrl: string) => {
         try {
-            const updatedBook = await useCase.updateBook(state.bookList, pictureUrl, book, title);
-            const index = state.bookList.findIndex(b => b.id === updatedBook.id);
-            state.bookList[index] = updatedBook;
-            setState(state => ({...state, bookList: [...state.bookList]}));
+            const updatedBook = await useCase.updateBook(state.bookList as Book[], pictureUrl, book, title);
+            const bookList = state.bookList.map(b => b.id === updatedBook.id ? updatedBook : b);
+            setState(state => ({...state, bookList}));
         } catch (e) {
             alert(e.message);
         }
@@ -52,16 +51,14 @@ export function useLibraryApp(useCase: LibraryUseCase) {
 
     const deleteBook = async (book: Book) => {
         await useCase.removeBook(book);
-        const index = state.bookList.findIndex(b => b.id === book.id);
-        state.bookList.splice(index, 1);
-        setState(state => ({...state, bookList: [...state.bookList]}));
+        const bookList = state.bookList.filter(b => b.id !== book.id);
+        setState(state => ({...state, bookList}));
     }
 
     const toggleComplete = async (book: Book) => {
         const updatedBook = await useCase.toggleToRead(book);
-        const index = state.bookList.findIndex(b => b.id === updatedBook.id);
-        state.bookList[index] = updatedBook;
-        setState(state => ({...state, bookList: [...state.bookList]}));
+        const bookList = state.bookList.map(b => b.id === updatedBook.id ? updatedBook : b);
+        setState(state => ({...state, bookList}));
     }
 
     const setFilter = (filter: FilterKind) => {
@@ -76,11 +73,11 @@ export function useLibraryApp(useCase: LibraryUseCase) {
         setState(state => ({...state, newBookPictureUrl: event.target.value}));
     }
 
-    const books = filterBooks(state.bookList, state.currentFilter);
+    const books = filterBooks(state.bookList as Book[], state.currentFilter);
     return {
         newBookTitle: state.newBookTitle,
         newBookPictureUrl: state.newBookPictureUrl,
-        numberOfBooks: calculateNumberOfBooks(state.bookList),
+        numberOfBooks: calculateNumberOfBooks(state.bookList as Book[]),
         initialize,
         add,
         update,
