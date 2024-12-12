@@ -21,12 +21,8 @@ const initialState = (): LibraryAppState => ({
     currentFilter: 'all',
 });
 
-export const LibraryApp = ({useCase}: {useCase: LibraryUseCase}) => {
+function useLibraryApp(useCase: LibraryUseCase) {
     const [state, setState] = React.useState(initialState());
-
-    useEffect(() => {
-        initialize();
-    }, []);
 
     const initialize = async () => {
         const bookList = await useCase.getAllBooks();
@@ -34,28 +30,31 @@ export const LibraryApp = ({useCase}: {useCase: LibraryUseCase}) => {
     }
 
     const add = async () => {
-        try{
+        try {
             const aBook = await useCase.addBook(state.bookList, state.newBookTitle, state.newBookPictureUrl);
-            setState(state => ({...state, bookList: [...state.bookList, aBook], newBookTitle: '', newBookPictureUrl: ''}));
-        }
-        catch (e) {
+            setState(state => ({
+                ...state,
+                bookList: [...state.bookList, aBook],
+                newBookTitle: '',
+                newBookPictureUrl: ''
+            }));
+        } catch (e) {
             alert(e.message);
         }
     };
 
-    const update = async (book:Book, title:string, pictureUrl:string) => {
-        try{
+    const update = async (book: Book, title: string, pictureUrl: string) => {
+        try {
             const updatedBook = await useCase.updateBook(state.bookList, pictureUrl, book, title);
             const index = state.bookList.findIndex(b => b.id === updatedBook.id);
             state.bookList[index] = updatedBook;
             setState(state => ({...state, bookList: [...state.bookList]}));
-        }
-        catch (e) {
+        } catch (e) {
             alert(e.message);
         }
     }
 
-    const deleteBook = async (book:Book) => {
+    const deleteBook = async (book: Book) => {
         await useCase.removeBook(book);
         const index = state.bookList.findIndex(b => b.id === book.id);
         if (state.bookList[index].completed) {
@@ -65,7 +64,7 @@ export const LibraryApp = ({useCase}: {useCase: LibraryUseCase}) => {
         setState(state => ({...state, bookList: [...state.bookList]}));
     }
 
-    const toggleComplete = async (book:Book) => {
+    const toggleComplete = async (book: Book) => {
         const updatedBook = await useCase.toggleToRead(book);
         const index = state.bookList.findIndex(b => b.id === updatedBook.id);
         state.bookList[index] = updatedBook;
@@ -86,6 +85,28 @@ export const LibraryApp = ({useCase}: {useCase: LibraryUseCase}) => {
     }
 
     const books = filterBooks(state.bookList, state.currentFilter);
+    return {
+        newBookTitle: state.newBookTitle,
+        newBookPictureUrl: state.newBookPictureUrl,
+        numberOfBooks: state.numberOfBooks,
+        initialize,
+        add,
+        update,
+        deleteBook,
+        toggleComplete,
+        setFilter,
+        onTitleChange,
+        onPictureUrlChange,
+        books
+    };
+}
+
+export const LibraryApp = ({useCase}: {useCase: LibraryUseCase}) => {
+    const hook = useLibraryApp(useCase);
+
+    useEffect(() => {
+        hook.initialize();
+    }, []);
 
     return(
         <div className="app-container">
@@ -94,38 +115,38 @@ export const LibraryApp = ({useCase}: {useCase: LibraryUseCase}) => {
                 <input
                     data-test-id={"titleInput"}
                     className="library-input"
-                    value={state.newBookTitle}
+                    value={hook.newBookTitle}
                     placeholder={'Book Title'}
-                    onChange={onTitleChange}
+                    onChange={hook.onTitleChange}
                 />
                 <input
                     data-test-id={"coverInput"}
                     className="library-input"
-                    value={state.newBookPictureUrl}
+                    value={hook.newBookPictureUrl}
                     placeholder={'Cover Url'}
-                    onChange={onPictureUrlChange}
+                    onChange={hook.onPictureUrlChange}
                 />
             </div>
             <button
                 data-test-id={"addButton"}
                 className="library-button add-book-button"
-                onClick={add}>
+                onClick={hook.add}>
                 Add Book
             </button>
-            <h2>Books Read: {state.numberOfBooks}</h2>
+            <h2>Books Read: {hook.numberOfBooks}</h2>
             <div>
-                <button data-test-id={"allFilterButton"} className="library-button all-filter" onClick={()=>setFilter('all')}>All</button>
-                <button data-test-id={"readFilterButton"} className="library-button completed-filter" onClick={()=>setFilter('completed')}>Read</button>
-                <button data-test-id={"unreadFilterButton"} className="library-button incomplete-filter" onClick={()=>setFilter('incomplete')}>Unread</button>
+                <button data-test-id={"allFilterButton"} className="library-button all-filter" onClick={()=>hook.setFilter('all')}>All</button>
+                <button data-test-id={"readFilterButton"} className="library-button completed-filter" onClick={()=>hook.setFilter('completed')}>Read</button>
+                <button data-test-id={"unreadFilterButton"} className="library-button incomplete-filter" onClick={()=>hook.setFilter('incomplete')}>Unread</button>
             </div>
             <ul className="book-list" data-test-id={"bookList"}>
-                {books.map((b, index) =>
+                {hook.books.map((b, index) =>
                     <BookComponent
                         book={b}
                         index={index}
-                        toggleComplete={toggleComplete}
-                        deleteBook={deleteBook}
-                        update={update}
+                        toggleComplete={hook.toggleComplete}
+                        deleteBook={hook.deleteBook}
+                        update={hook.update}
                     />)}
             </ul>
         </div>
