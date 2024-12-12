@@ -1,20 +1,19 @@
-import {Book} from "../../../domain/book";
+import {Book, calculateNumberOfBooks} from "../../../domain/book";
 import {filterBooks, FilterKind} from "../../../domain/services/FilterBook";
 import {LibraryUseCase} from "../../../application/libraryUseCase";
 import * as React from "react";
 
 type LibraryAppState = {
-    bookList: Book[],
-    newBookTitle: string,
-    newBookPictureUrl: string,
-    numberOfBooks: number,
-    currentFilter: FilterKind,
+    readonly bookList: Book[],
+    readonly newBookTitle: string,
+    readonly newBookPictureUrl: string,
+    readonly currentFilter: FilterKind,
 }
+
 const initialState = (): LibraryAppState => ({
     bookList: [],
     newBookTitle: '',
     newBookPictureUrl: '',
-    numberOfBooks: 0,
     currentFilter: 'all',
 });
 
@@ -54,9 +53,6 @@ export function useLibraryApp(useCase: LibraryUseCase) {
     const deleteBook = async (book: Book) => {
         await useCase.removeBook(book);
         const index = state.bookList.findIndex(b => b.id === book.id);
-        if (state.bookList[index].completed) {
-            state.numberOfBooks--;
-        }
         state.bookList.splice(index, 1);
         setState(state => ({...state, bookList: [...state.bookList]}));
     }
@@ -65,7 +61,6 @@ export function useLibraryApp(useCase: LibraryUseCase) {
         const updatedBook = await useCase.toggleToRead(book);
         const index = state.bookList.findIndex(b => b.id === updatedBook.id);
         state.bookList[index] = updatedBook;
-        updatedBook.completed ? state.numberOfBooks++ : state.numberOfBooks--;
         setState(state => ({...state, bookList: [...state.bookList]}));
     }
 
@@ -85,7 +80,7 @@ export function useLibraryApp(useCase: LibraryUseCase) {
     return {
         newBookTitle: state.newBookTitle,
         newBookPictureUrl: state.newBookPictureUrl,
-        numberOfBooks: state.numberOfBooks,
+        numberOfBooks: calculateNumberOfBooks(state.bookList),
         initialize,
         add,
         update,

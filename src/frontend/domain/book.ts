@@ -82,3 +82,7 @@ export function ensureThatBookIsNotRepeated(book: Book, books: Book[]) {
         }
     });
 }
+
+export const calculateNumberOfBooks = (bookList: Book[]): number => {
+    return bookList.filter(b => b.completed).length;
+}
